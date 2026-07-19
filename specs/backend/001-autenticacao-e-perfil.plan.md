@@ -10,14 +10,14 @@
 
 ## Resumo
 
-API Spring Boot 3.5 (Java 21) atuando como **OAuth2 Resource Server**: valida o JWT do Supabase via JWKS, provisiona o perfil interno de forma idempotente no primeiro acesso e expõe `GET /me` / `PATCH /me`. O projeto nasce nesta feature (diretório `backend/`), incluindo fundação transversal reutilizada pelas features 002–006: formato de erro padronizado, correlation id e migrações Flyway.
+API Spring Boot 4.1 (Java 21) atuando como **OAuth2 Resource Server**: valida o JWT do Supabase via JWKS, provisiona o perfil interno de forma idempotente no primeiro acesso e expõe `GET /me` / `PATCH /me`. O projeto nasce nesta feature (diretório `backend/`), incluindo fundação transversal reutilizada pelas features 002–006: formato de erro padronizado, correlation id e migrações Flyway.
 
 ## Decisões
 
 - **E-mail verificado** → não exigido no MVP — já fixado na spec (Assumptions).
 - **Layout do repo** → monorepo com `backend/` na raiz — mantém specs e código juntos, frontend virá em `frontend/`.
 - **Build** → Maven + Maven Wrapper (`mvnw`) — funciona em qualquer máquina sem instalação global.
-- **Spring Boot 3.5.x / Java 21** → conforme constituição (Spring Boot 3.x); 21 é o LTS instalado.
+- **Spring Boot 4.1 / Java 21** → a série 3.5 saiu do suporte OSS em jun/2026 e o Initializr só gera 4.x; specs e constituição atualizadas de "3.x" para "4.x" (decisão desta fase). Java 21 é o LTS instalado.
 - **Testes de banco** → Zonky Embedded Postgres (Postgres real, sem Docker — indisponível nesta máquina); fidelidade a `ON CONFLICT`/RLS-friendly SQL que o H2 não garante.
 - **Provisionamento + último acesso** → um único upsert `INSERT … ON CONFLICT (supabase_id) DO UPDATE SET last_access_at = now()` — atômico, idempotente sob concorrência (FR-004, FR-009, SC-003).
 - **Nome de exibição inicial** → claim `user_metadata.name`/`full_name`; fallback: parte local do e-mail; fallback final: "Estudante".

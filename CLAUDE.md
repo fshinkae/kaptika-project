@@ -10,7 +10,7 @@
 
 | Camada | Tecnologias |
 |---|---|
-| **Backend** | Java + Spring Boot 3.x, PostgreSQL (Supabase). API RESTful. |
+| **Backend** | Java + Spring Boot 4.x, PostgreSQL (Supabase). API RESTful. |
 | **Frontend** | React + TypeScript + Tailwind CSS + Vite. Mobile-first. |
 | **Auth** | Supabase Auth (cadastro/login/sessão no cliente). O backend só **valida** o JWT (via JWKS). |
 | **Dados de questões** | API pública **enem.dev** (consumida e cacheada pelo backend). |
