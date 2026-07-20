@@ -80,6 +80,22 @@ public class StreakService {
      * (detecção lazy de quebra — FR-006), reporta a quebra ocorrida desde o
      * último acesso exatamente uma vez e a marca como reconhecida.
      */
+    /**
+     * Leitura sem efeitos colaterais para os agregados do perfil (GET /me da
+     * feature 001): aplica a reconciliação em memória para refletir quebras
+     * pendentes, mas não persiste nada nem reconhece a quebra — o sinal
+     * brokenSinceLastAccess continua reservado ao GET /me/streak.
+     */
+    @Transactional(readOnly = true)
+    public int peekCurrent(UUID profileId) {
+        return streaks.findById(profileId)
+                .map(streak -> {
+                    reconciliation.reconcile(streak, reconciliation.today());
+                    return streak.getCurrentStreak();
+                })
+                .orElse(0);
+    }
+
     @Transactional
     public StreakResponse getState(UUID profileId) {
         Optional<Streak> maybe = streaks.findForUpdate(profileId);
