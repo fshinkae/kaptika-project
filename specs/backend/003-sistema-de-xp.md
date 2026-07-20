@@ -4,7 +4,7 @@
 
 **Created**: 2026-07-14
 
-**Status**: Draft
+**Status**: Implemented
 
 **Camada**: Backend (API RESTful — Spring Boot 4.x, PostgreSQL/Supabase)
 
