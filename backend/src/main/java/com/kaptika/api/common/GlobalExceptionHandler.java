@@ -32,9 +32,32 @@ public class GlobalExceptionHandler {
     }
 
     /** Regras de validação aplicadas na camada de serviço → 422. */
-    @ExceptionHandler(InvalidProfileDataException.class)
-    public ResponseEntity<ApiError> handleInvalidData(InvalidProfileDataException ex) {
+    @ExceptionHandler(InvalidRequestDataException.class)
+    public ResponseEntity<ApiError> handleInvalidData(InvalidRequestDataException ex) {
         return unprocessable(ex.getMessage());
+    }
+
+    /** Sessão inexistente ou de outro estudante → 404 sem vazar existência. */
+    @ExceptionHandler(com.kaptika.api.session.SessionExceptions.SessionNotFoundException.class)
+    public ResponseEntity<ApiError> handleSessionNotFound(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiError.of("not_found", "Recurso não encontrado."));
+    }
+
+    /** Conflitos do ciclo de vida da sessão (FR-006/007) → 409. */
+    @ExceptionHandler({com.kaptika.api.session.SessionExceptions.AnswerConflictException.class,
+            com.kaptika.api.session.SessionExceptions.SessionClosedException.class})
+    public ResponseEntity<ApiError> handleSessionConflict(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiError.of("conflict", ex.getMessage()));
+    }
+
+    /** Fonte externa de questões indisponível (FR-012) → 503. */
+    @ExceptionHandler(com.kaptika.api.session.source.QuestionSourceUnavailableException.class)
+    public ResponseEntity<ApiError> handleQuestionSource(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(ApiError.of("question_source_unavailable",
+                        "Fonte de questões indisponível no momento. Tente novamente."));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
