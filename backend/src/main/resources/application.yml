@@ -16,6 +16,12 @@ kaptika:
   supabase:
     # JWKS do projeto Supabase (FR-010); ver .env de exemplo no README
     jwks-uri: ${SUPABASE_JWKS_URI:https://example.supabase.co/auth/v1/.well-known/jwks.json}
+  enem-dev:
+    base-url: ${ENEM_DEV_URL:https://api.enem.dev/v1}
+    connect-timeout: 2s
+    read-timeout: 3s
+    first-year: 2015
+    last-year: 2023
 
 management:
   endpoints:
