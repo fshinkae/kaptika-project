@@ -56,6 +56,11 @@ Três fases por feature, sempre **uma feature por vez e backend antes do fronten
 
 `001 Autenticação` é a base → `002 Sessões` produz os eventos que alimentam `003 XP`, `004 Streak` e `005 Medalhas` → `006 Placar` consome o XP consolidado. Em cada feature: backend (contratos/dados) primeiro, depois o frontend que os consome.
 
+## Convenções de código (backend)
+
+- **Migrações Flyway com faixa por feature**: `V1xx__` (001), `V2xx__` (002), `V3xx__` (003), `V4xx__` (004), `V5xx__` (005), `V6xx__` (006) — faixas pré-alocadas para permitir features em paralelo sem colisão de versão. (A `V1__create_profiles.sql` original da 001 é a exceção histórica.)
+- **Eventos de domínio** em `com.kaptika.api.events`: publicados na transação de origem (002); consumidores usam `@TransactionalEventListener(AFTER_COMMIT)` e são **idempotentes** pela chave determinística do evento.
+
 ## Convenções de git
 
 - **Um branch por feature**, nomeado como o campo *Feature Branch* da spec: `backend/00X-...` ou `frontend/00X-...`.
