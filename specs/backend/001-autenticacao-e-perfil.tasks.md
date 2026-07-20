@@ -10,33 +10,33 @@
 
 ## Fase 1 — Preparação
 
-- [ ] T001 Gerar projeto Spring Boot 3.5 (Java 21, Maven Wrapper) em `backend/` com web, security, oauth2-resource-server, data-jpa, postgresql, flyway, validation, actuator
-- [ ] T002 Configurar `pom.xml`: JaCoCo (relatório + mínimo 80% linha) e Zonky Embedded Postgres para testes em `backend/pom.xml`
+- [x] T001 Gerar projeto Spring Boot 3.5 (Java 21, Maven Wrapper) em `backend/` com web, security, oauth2-resource-server, data-jpa, postgresql, flyway, validation, actuator
+- [x] T002 Configurar `pom.xml`: JaCoCo (relatório + mínimo 80% linha) e Zonky Embedded Postgres para testes em `backend/pom.xml`
 
 ## Fase 2 — Fundação (bloqueia o resto)
 
-- [ ] T003 [FR-012] Filtro de correlation id + `ApiError` + `@RestControllerAdvice` em `backend/src/main/java/com/kaptika/api/common/`
-- [ ] T004 [FR-004] Migração `V1__create_profiles.sql` (tabela `profiles`, unique `supabase_id`) em `backend/src/main/resources/db/migration/`
-- [ ] T005 [US1] [FR-001..003,010] `SecurityConfig` resource server (JWKS configurável, skew 60s, entrypoint 401 padronizado, stateless) em `backend/src/main/java/com/kaptika/api/config/`
+- [x] T003 [FR-012] Filtro de correlation id + `ApiError` + `@RestControllerAdvice` em `backend/src/main/java/com/kaptika/api/common/`
+- [x] T004 [FR-004] Migração `V1__create_profiles.sql` (tabela `profiles`, unique `supabase_id`) em `backend/src/main/resources/db/migration/`
+- [x] T005 [US1] [FR-001..003,010] `SecurityConfig` resource server (JWKS configurável, skew 60s, entrypoint 401 padronizado, stateless) em `backend/src/main/java/com/kaptika/api/config/`
 
 ## Fase 3 — História US1 (P1) 🎯 Autorizar requisições
 
-- [ ] T006 [US1] [SC-001] Testes de autorização com decoder RSA local: sem token/expirado/adulterado → 401 padronizado; válido → 200 em `backend/src/test/java/com/kaptika/api/security/`
+- [x] T006 [US1] [SC-001] Testes de autorização com decoder RSA local: sem token/expirado/adulterado → 401 padronizado; válido → 200 em `backend/src/test/java/com/kaptika/api/security/`
 
 ## Fase 4 — História US2 (P1) — Provisionar e servir perfil
 
-- [ ] T007 [US2] [FR-004,009] Entidade `Profile`, repository com upsert `ON CONFLICT`, `ProfileService` e filtro de provisionamento em `backend/src/main/java/com/kaptika/api/profile/`
-- [ ] T008 [US2] [FR-005] `GET /me` com agregados via `ProgressSummaryProvider` (impl. zero) em `backend/src/main/java/com/kaptika/api/profile/`
-- [ ] T009 [US2] [SC-003] Testes de integração (Zonky): provisionamento único, concorrente sem duplicação, `GET /me` completo em `backend/src/test/java/com/kaptika/api/profile/`
+- [x] T007 [US2] [FR-004,009] Entidade `Profile`, repository com upsert `ON CONFLICT`, `ProfileService` e filtro de provisionamento em `backend/src/main/java/com/kaptika/api/profile/`
+- [x] T008 [US2] [FR-005] `GET /me` com agregados via `ProgressSummaryProvider` (impl. zero) em `backend/src/main/java/com/kaptika/api/profile/`
+- [x] T009 [US2] [SC-003] Testes de integração (Zonky): provisionamento único, concorrente sem duplicação, `GET /me` completo em `backend/src/test/java/com/kaptika/api/profile/`
 
 ## Fase 5 — História US3 (P2) — Atualizar perfil
 
-- [ ] T010 [US3] [FR-006..008] `PATCH /me` com Bean Validation (nome 2–40, avatar URL ≤ 500) → 200/422 em `backend/src/main/java/com/kaptika/api/profile/`
-- [ ] T011 [US3] [SC-006] Testes: PATCH válido persiste; inválido → 422 com regra; posse implícita (A não altera B) em `backend/src/test/java/com/kaptika/api/profile/`
+- [x] T010 [US3] [FR-006..008] `PATCH /me` com Bean Validation (nome 2–40, avatar URL ≤ 500) → 200/422 em `backend/src/main/java/com/kaptika/api/profile/`
+- [x] T011 [US3] [SC-006] Testes: PATCH válido persiste; inválido → 422 com regra; posse implícita (A não altera B) em `backend/src/test/java/com/kaptika/api/profile/`
 
 ## Fase 6 — Conferência
 
-- [ ] T012 Rodar suíte completa + JaCoCo, conferir SC-001..006, registrar resultado e atualizar Status da spec para Implemented
+- [x] T012 Rodar suíte completa + JaCoCo, conferir SC-001..006, registrar resultado e atualizar Status da spec para Implemented
 
 ## Dependências
 
@@ -47,3 +47,18 @@
 
 - Commit por tarefa ou grupo coeso: `tipo(001): <ID> descrição`.
 - Ao concluir, marcar `- [ ]` → `- [x]`.
+
+## Resultado da conferência (T012 — 2026-07-19)
+
+Suíte: **23 testes, 0 falhas** (`./mvnw verify`). Cobertura JaCoCo: **94,9% de linhas** (mínimo 80% imposto no build).
+
+| SC | Resultado | Evidência |
+|---|---|---|
+| SC-001 | ✅ | `SecurityAuthorizationTest`: sem token, expirado, adulterado e malformado → 401 |
+| SC-002 | ✅ | `ProfileFlowTest.studentsAreIsolated`: A não lê/altera B; nomes repetidos desambiguados por id |
+| SC-003 | ✅ | `ProfileFlowTest.concurrentProvisioningCreatesSingleProfile`: 8 threads → 1 perfil |
+| SC-004 | ✅* | GET /me < 50 ms nos testes locais; teste de carga p95 real fica para ambiente de staging |
+| SC-005 | ✅* | Decoder JWKS com cache/refresh do Nimbus; rotação real só é observável em produção |
+| SC-006 | ✅ | 401 idêntico e genérico para todas as falhas de auth; `ErrorContractTest` valida o contrato |
+
+\* verificado funcionalmente; a métrica de produção depende de ambiente real.
