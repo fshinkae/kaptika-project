@@ -6,7 +6,7 @@
 
 **Status**: Draft
 
-**Camada**: Backend (API RESTful — Spring Boot 3.x, PostgreSQL/Supabase)
+**Camada**: Backend (API RESTful — Spring Boot 4.x, PostgreSQL/Supabase)
 
 **Contraparte**: [frontend/005-medalhas-e-conquistas.md](../frontend/005-medalhas-e-conquistas.md)
 

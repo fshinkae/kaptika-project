@@ -9,7 +9,7 @@ Este diretório contém as **specs** do Kaptika, um aplicativo web gamificado de
 ```
 specs/
 ├── README.md
-├── backend/     # API RESTful (Java + Spring Boot 3.x) + PostgreSQL/Supabase
+├── backend/     # API RESTful (Java + Spring Boot 4.x) + PostgreSQL/Supabase
 │   ├── 001-autenticacao-e-perfil.md
 │   ├── 002-sessoes-de-estudo.md
 │   ├── 003-sistema-de-xp.md

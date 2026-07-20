@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: kaptika-api
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/kaptika}
+    username: ${DB_USER:kaptika}
+    password: ${DB_PASSWORD:kaptika}
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate # o schema é do Flyway; o Hibernate apenas confere
+
+kaptika:
+  supabase:
+    # JWKS do projeto Supabase (FR-010); ver .env de exemplo no README
+    jwks-uri: ${SUPABASE_JWKS_URI:https://example.supabase.co/auth/v1/.well-known/jwks.json}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

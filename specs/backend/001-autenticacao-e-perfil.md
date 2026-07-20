@@ -4,9 +4,9 @@
 
 **Created**: 2026-07-14
 
-**Status**: Draft
+**Status**: Implemented
 
-**Camada**: Backend (API RESTful — Spring Boot 3.x, PostgreSQL/Supabase)
+**Camada**: Backend (API RESTful — Spring Boot 4.x, PostgreSQL/Supabase)
 
 **Contraparte**: [frontend/001-autenticacao-e-perfil.md](../frontend/001-autenticacao-e-perfil.md)
 
