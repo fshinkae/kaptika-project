@@ -1,6 +1,6 @@
 package com.kaptika.api.profile;
 
-import com.kaptika.api.common.InvalidProfileDataException;
+import com.kaptika.api.common.InvalidRequestDataException;
 import com.kaptika.api.profile.progress.ProgressSummaryProvider;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -55,7 +55,7 @@ public class ProfileService {
     private String normalizedDisplayName(String raw) {
         String trimmed = raw.trim();
         if (trimmed.length() < DisplayNames.MIN_LENGTH || trimmed.length() > DisplayNames.MAX_LENGTH) {
-            throw new InvalidProfileDataException(
+            throw new InvalidRequestDataException(
                     "displayName: nome de exibição deve ter entre 2 e 40 caracteres");
         }
         return trimmed;
