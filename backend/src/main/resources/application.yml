@@ -16,6 +16,11 @@ kaptika:
   supabase:
     # JWKS do projeto Supabase (FR-010); ver .env de exemplo no README
     jwks-uri: ${SUPABASE_JWKS_URI:https://example.supabase.co/auth/v1/.well-known/jwks.json}
+  streak:
+    # Fuso que define a virada do dia da ofensiva (compartilhado com o Placar 006)
+    zone: America/Sao_Paulo
+    # Job diário de reconciliação de quebras (FR-006), no fuso acima
+    reconcile-cron: "0 10 0 * * *"
   enem-dev:
     base-url: ${ENEM_DEV_URL:https://api.enem.dev/v1}
     connect-timeout: 2s
