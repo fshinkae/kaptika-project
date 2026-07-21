@@ -10,40 +10,40 @@
 
 ## Fase 1 — Preparação
 
-- [ ] T001 [Fundação] Criar pasta `frontend/src/features/streak/` e confirmar reuso de
+- [x] T001 [Fundação] Criar pasta `frontend/src/features/streak/` e confirmar reuso de
   apiFetch/ApiError, React Query e componentes transversais.
 
 ## Fase 2 — Fundação (bloqueia o resto)
 
-- [ ] T002 [FR-003] Cliente de API e tipos: `getStreak()` + `StreakState` em
+- [x] T002 [FR-003] Cliente de API e tipos: `getStreak()` + `StreakState` em
   `frontend/src/features/streak/streakApi.ts` (reflete `StreakResponse` do backend).
 
 ## Fase 3 — História US1 (P1) 🎯 MVP — Ver e sentir a ofensiva
 
-- [ ] T003 [US1][FR-001/002/007/008] `StreakPanel` com query, estados carregando/erro, hero da
+- [x] T003 [US1][FR-001/002/007/008] `StreakPanel` com query, estados carregando/erro, hero da
   ofensiva atual, badge "meta cumprida hoje" e convite inicial (current 0) em
   `frontend/src/features/streak/StreakPanel.tsx`.
 
 ## Fase 4 — História US2 (P1) — Comunicar a perda + recorde
 
-- [ ] T004 [US2][FR-004/005/009] Banner empático de quebra (`brokenSinceLastAccess` + `brokenAt`
+- [x] T004 [US2][FR-004/005/009] Banner empático de quebra (`brokenSinceLastAccess` + `brokenAt`
   formatado) e estatística de recorde no `StreakPanel`.
 
 ## Fase 5 — História US3 (P3) — Freezes na interface
 
-- [ ] T005 [US3][FR-006] Estatística de congelamentos (`freezes`) no `StreakPanel`.
+- [x] T005 [US3][FR-006] Estatística de congelamentos (`freezes`) no `StreakPanel`.
 
 ## Fase 6 — Exportação e testes
 
-- [ ] T006 [FR-001] `StreakPage` (wrapper com container) e barrel `index.ts` exportando widget,
+- [x] T006 [FR-001] `StreakPage` (wrapper com container) e barrel `index.ts` exportando widget,
   página, tipos e cliente para o coordenador plugar.
-- [ ] T007 [US1/US2/US3] Suíte `StreakPanel.test.tsx` (padrão ProfilePage): render
+- [x] T007 [US1/US2/US3] Suíte `StreakPanel.test.tsx` (padrão ProfilePage): render
   current/record/freezes; badge meta hoje; aviso de quebra com data; estado inicial (0);
   carregando/erro(repetir).
 
 ## Fase 7 — Conferência
 
-- [ ] T008 Conferir a implementação contra SC-001..SC-005; rodar test/build/lint; Status da spec
+- [x] T008 Conferir a implementação contra SC-001..SC-005; rodar test/build/lint; Status da spec
   → Implemented.
 
 ## Dependências
