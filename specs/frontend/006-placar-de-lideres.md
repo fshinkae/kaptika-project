@@ -4,7 +4,7 @@
 
 **Created**: 2026-07-14
 
-**Status**: Draft
+**Status**: Implemented
 
 **Camada**: Frontend (React + TypeScript + Tailwind + Vite + React Router v6, Mobile-First)
 
