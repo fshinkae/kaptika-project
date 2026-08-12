@@ -37,7 +37,9 @@ export function LeaderboardPage() {
 
       {isPending ? (
         <LoadingState label="Carregando placar…" />
-      ) : isError ? (
+      ) : isError && entries.length === 0 ? (
+        // Erro só toma a tela quando não há nada carregado; falha do
+        // "carregar mais" é tratada inline, preservando a lista (FR-005).
         <ErrorState onRetry={() => refetch()} />
       ) : (
         <>
