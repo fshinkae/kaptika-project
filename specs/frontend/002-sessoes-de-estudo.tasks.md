@@ -14,26 +14,26 @@
 
 ## Fase 2 — Fundação (bloqueia o resto)
 
-- [ ] T002 [FR-001..007] Módulo de API + tipos da sessão (tipos `SessionResponse`, `QuestionView`, `AlternativeView`, `AnswerView`, `AnswerResult`, `SessionSummary`, constante `AREAS`, funções `createSession`/`getSession`/`answerQuestion`/`finishSession`) em `frontend/src/features/session/sessionApi.ts`
+- [x] T002 [FR-001..007] Módulo de API + tipos da sessão (tipos `SessionResponse`, `QuestionView`, `AlternativeView`, `AnswerView`, `AnswerResult`, `SessionSummary`, constante `AREAS`, funções `createSession`/`getSession`/`answerQuestion`/`finishSession`) em `frontend/src/features/session/sessionApi.ts`
 
 ## Fase 3 — História US1 (P1) 🎯 MVP
 
-- [ ] T003 [US1] `AreaSelect`: grade das 4 áreas + iniciar, tratando carregando/erro/503 em `frontend/src/features/session/AreaSelect.tsx`
-- [ ] T004 [US1] `SessionProgress`: indicador N/total refletindo total real em `frontend/src/features/session/SessionProgress.tsx`
-- [ ] T005 [US1] `QuestionCard`: radiogroup acessível, exige seleção+confirmação, feedback certo/errado + alternativa correta, sem reenvio em `frontend/src/features/session/QuestionCard.tsx`
-- [ ] T006 [US1] `SessionSummaryView`: acertos/erros/total + nova sessão em `frontend/src/features/session/SessionSummaryView.tsx`
-- [ ] T007 [US1] `SessionFlowPage`: máquina de estados (choosing→active→summary), dono do sessionId e das mutações em `frontend/src/features/session/SessionFlowPage.tsx`
+- [x] T003 [US1] `AreaSelect`: grade das 4 áreas + iniciar, tratando carregando/erro/503 em `frontend/src/features/session/AreaSelect.tsx`
+- [x] T004 [US1] `SessionProgress`: indicador N/total refletindo total real em `frontend/src/features/session/SessionProgress.tsx`
+- [x] T005 [US1] `QuestionCard`: radiogroup acessível, exige seleção+confirmação, feedback certo/errado + alternativa correta, sem reenvio em `frontend/src/features/session/QuestionCard.tsx`
+- [x] T006 [US1] `SessionSummaryView`: acertos/erros/total + nova sessão em `frontend/src/features/session/SessionSummaryView.tsx`
+- [x] T007 [US1] `SessionFlowPage`: máquina de estados (choosing→active→summary), dono do sessionId e das mutações em `frontend/src/features/session/SessionFlowPage.tsx`
 
 ## Fase 4 — Histórias US2/US3 (P2)
 
-- [ ] T008 [US2] Botão "Encerrar sessão" com confirmação → `finishSession` → resumo parcial em `SessionFlowPage.tsx`
-- [ ] T009 [US2] Retomada via `createSession` idempotente (200 devolve `nextQuestionId`) refletida no fluxo em `SessionFlowPage.tsx`
-- [ ] T010 [US3] Estados de carregando/erro(repetir) e 503 com mensagem clara em todo o fluxo
+- [x] T008 [US2] Botão "Encerrar sessão" com confirmação → `finishSession` → resumo parcial em `SessionFlowPage.tsx`
+- [x] T009 [US2] Retomada via `createSession` idempotente (200 devolve `nextQuestionId`) refletida no fluxo em `SessionFlowPage.tsx`
+- [x] T010 [US3] Estados de carregando/erro(repetir) e 503 com mensagem clara em todo o fluxo
 
 ## Fase 5 — Testes e Conferência
 
-- [ ] T011 [US1/US2/US3] Testes de fluxo em `frontend/src/features/session/SessionFlowPage.test.tsx` cobrindo: 1ª questão sem gabarito (SC-006), correção após responder, nunca renderiza `correctAlternative` antes de responder, reenvio idempotente (duplo clique), resumo ao encerrar, 503 com mensagem, carregando/erro
-- [ ] T012 Conferir a implementação contra os SC-XXX e registrar o resultado abaixo; `npm test` + `npm run build` + `npm run lint` verdes; Status da spec → Implemented
+- [x] T011 [US1/US2/US3] Testes de fluxo em `frontend/src/features/session/SessionFlowPage.test.tsx` cobrindo: 1ª questão sem gabarito (SC-006), correção após responder, nunca renderiza `correctAlternative` antes de responder, reenvio idempotente (duplo clique), resumo ao encerrar, 503 com mensagem, carregando/erro
+- [x] T012 Conferir a implementação contra os SC-XXX e registrar o resultado abaixo; `npm test` + `npm run build` + `npm run lint` verdes; Status da spec → Implemented
 
 ## Conferência dos Success Criteria
 
