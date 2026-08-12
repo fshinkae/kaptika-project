@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { useAuth } from '../auth/AuthContext'
 import { ApiError } from '../lib/apiClient'
 import { getProfile, updateProfile, type Profile } from '../lib/profileApi'
+import { ProfileBadgesHighlight } from '../features/badges'
 import { Avatar } from '../components/Avatar'
 import { Button } from '../components/Button'
 import { ErrorState } from '../components/ErrorState'
@@ -67,6 +68,8 @@ function ProfileView({
         <Stat label="Ofensiva" value={`${progress.streakCurrent} dias`} />
         <Stat label="Medalhas" value={progress.badgesCount} />
       </dl>
+
+      <ProfileBadgesHighlight />
 
       <div className="flex w-full flex-col gap-3">
         <Button onClick={onEdit}>Editar perfil</Button>
