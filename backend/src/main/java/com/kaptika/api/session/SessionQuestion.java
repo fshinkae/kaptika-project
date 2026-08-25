@@ -1,17 +1,19 @@
 package com.kaptika.api.session;
 
+import com.kaptika.api.session.source.SourcedQuestion;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.util.UUID;
 
-/** Questão posicionada dentro de uma sessão (ordem estável para retomada — FR-008). */
+/**
+ * Referência posicionada de uma questão dentro de uma sessão (ordem estável
+ * para retomada — FR-008). Guarda apenas a REFERÊNCIA (source_id/ano/índice)
+ * para reconsultar a enem.dev; nenhum conteúdo/gabarito é persistido.
+ */
 @Entity
 @Table(name = "session_questions")
 public class SessionQuestion {
@@ -25,24 +27,39 @@ public class SessionQuestion {
     @EmbeddedId
     private Key key;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "question_id", nullable = false)
-    private Question question;
+    @Column(name = "source_id", nullable = false, length = 80)
+    private String sourceId;
+
+    @Column(name = "origin_year", nullable = false)
+    private int originYear;
+
+    @Column(name = "question_index", nullable = false)
+    private int questionIndex;
 
     protected SessionQuestion() {
         // JPA
     }
 
-    public SessionQuestion(UUID sessionId, int position, Question question) {
+    public SessionQuestion(UUID sessionId, int position, SourcedQuestion question) {
         this.key = new Key(sessionId, position);
-        this.question = question;
+        this.sourceId = question.sourceId();
+        this.originYear = question.originYear();
+        this.questionIndex = question.index();
     }
 
     public int getPosition() {
         return key.position();
     }
 
-    public Question getQuestion() {
-        return question;
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    public int getOriginYear() {
+        return originYear;
+    }
+
+    public int getQuestionIndex() {
+        return questionIndex;
     }
 }

@@ -10,7 +10,10 @@ public record EnemDevProperties(
         Duration connectTimeout,
         Duration readTimeout,
         int firstYear,
-        int lastYear) {
+        int lastYear,
+        Duration minRequestInterval,
+        int maxPagesPerYear,
+        Duration cacheTtl) {
 
     public EnemDevProperties {
         if (baseUrl == null || baseUrl.isBlank()) {
@@ -27,6 +30,15 @@ public record EnemDevProperties(
         }
         if (lastYear == 0) {
             lastYear = 2023;
+        }
+        if (minRequestInterval == null) {
+            minRequestInterval = Duration.ofMillis(1100);
+        }
+        if (maxPagesPerYear == 0) {
+            maxPagesPerYear = 4;
+        }
+        if (cacheTtl == null) {
+            cacheTtl = Duration.ofMinutes(10);
         }
     }
 }

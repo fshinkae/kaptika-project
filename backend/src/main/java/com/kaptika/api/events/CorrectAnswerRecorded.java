@@ -14,7 +14,7 @@ import java.util.UUID;
 public record CorrectAnswerRecorded(
         UUID profileId,
         UUID sessionId,
-        UUID questionId,
+        String questionId,
         String area,
         Instant answeredAt,
         String idempotencyKey) {

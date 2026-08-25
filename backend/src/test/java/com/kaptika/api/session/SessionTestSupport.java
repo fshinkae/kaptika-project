@@ -3,8 +3,10 @@ package com.kaptika.api.session;
 import com.kaptika.api.events.CorrectAnswerRecorded;
 import com.kaptika.api.events.SessionCompleted;
 import com.kaptika.api.session.source.QuestionSource;
+import com.kaptika.api.session.source.SourcedQuestion;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.IntStream;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -38,28 +40,46 @@ public class SessionTestSupport {
     @Bean
     @Primary
     QuestionSource stubQuestionSource() {
-        return (area, limit) -> {
-            List<Question> stock = new ArrayList<>();
+        return new StubQuestionSource();
+    }
+
+    /**
+     * Fonte determinística sem rede. {@code fetch} entrega o acervo fixo da área;
+     * {@code find} devolve a questão pelo índice (gabarito sempre "A") — imita a
+     * consulta viva usada na correção/retomada.
+     */
+    static final class StubQuestionSource implements QuestionSource {
+
+        @Override
+        public List<SourcedQuestion> fetch(Area area, int limit) {
+            List<SourcedQuestion> stock = new ArrayList<>();
             IntStream.rangeClosed(1, stockFor(area))
                     .forEach(i -> stock.add(fixtureQuestion(area, i)));
             return stock.subList(0, Math.min(limit, stock.size()));
-        };
+        }
+
+        @Override
+        public Optional<SourcedQuestion> find(int year, int index) {
+            // área é irrelevante na correção/exibição; devolve fixture pelo índice
+            return Optional.of(fixtureQuestion(Area.LINGUAGENS, index));
+        }
     }
 
-    public static Question fixtureQuestion(Area area, int index) {
-        return new Question(
+    public static SourcedQuestion fixtureQuestion(Area area, int index) {
+        return new SourcedQuestion(
                 "test-" + area.slug() + "-" + index,
                 area,
                 "Enunciado " + index + " de " + area.slug(),
                 "Contexto " + index,
                 CORRECT,
                 2020,
+                index,
                 List.of(
-                        new Question.Alternative("A", "Alternativa correta"),
-                        new Question.Alternative("B", "Distrator 1"),
-                        new Question.Alternative("C", "Distrator 2"),
-                        new Question.Alternative("D", "Distrator 3"),
-                        new Question.Alternative("E", "Distrator 4")));
+                        new SourcedQuestion.Alternative("A", "Alternativa correta"),
+                        new SourcedQuestion.Alternative("B", "Distrator 1"),
+                        new SourcedQuestion.Alternative("C", "Distrator 2"),
+                        new SourcedQuestion.Alternative("D", "Distrator 3"),
+                        new SourcedQuestion.Alternative("E", "Distrator 4")));
     }
 
     @Bean

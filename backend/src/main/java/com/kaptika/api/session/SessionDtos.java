@@ -1,7 +1,7 @@
 package com.kaptika.api.session;
 
+import com.kaptika.api.session.source.SourcedQuestion;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import java.time.Instant;
 import java.util.List;
@@ -20,13 +20,12 @@ public final class SessionDtos {
             @NotBlank(message = "area é obrigatória") String area) {
     }
 
-    public record QuestionView(UUID questionId, int position, String statement,
+    public record QuestionView(String questionId, int position, String statement,
             String context, List<AlternativeView> alternatives) {
 
-        static QuestionView from(SessionQuestion sq) {
-            Question q = sq.getQuestion();
-            return new QuestionView(q.getId(), sq.getPosition(), q.getStatement(), q.getContext(),
-                    q.getAlternatives().stream()
+        static QuestionView from(SessionQuestion sq, SourcedQuestion q) {
+            return new QuestionView(sq.getSourceId(), sq.getPosition(), q.statement(), q.context(),
+                    q.alternatives().stream()
                             .map(a -> new AlternativeView(a.letter(), a.text()))
                             .toList());
         }
@@ -35,7 +34,7 @@ public final class SessionDtos {
     public record AlternativeView(String letter, String text) {
     }
 
-    public record AnswerView(UUID questionId, String chosen, boolean correct) {
+    public record AnswerView(String questionId, String chosen, boolean correct) {
     }
 
     public record SessionResponse(
@@ -49,18 +48,18 @@ public final class SessionDtos {
             Instant createdAt,
             List<QuestionView> questions,
             List<AnswerView> answers,
-            UUID nextQuestionId) {
+            String nextQuestionId) {
     }
 
     public record AnswerRequest(
-            @NotNull(message = "questionId é obrigatório") UUID questionId,
+            @NotBlank(message = "questionId é obrigatório") String questionId,
             @NotBlank(message = "alternative é obrigatória")
             @Pattern(regexp = "^[A-Ea-e]$", message = "alternative deve ser uma letra de A a E")
             String alternative) {
     }
 
     public record AnswerResult(
-            UUID questionId,
+            String questionId,
             String chosen,
             boolean correct,
             String correctAlternative,

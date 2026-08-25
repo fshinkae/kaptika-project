@@ -29,7 +29,7 @@ class SessionFlowTest extends IntegrationTest {
 
     private static final Pattern SESSION_ID = Pattern.compile("\"id\":\"([0-9a-f-]{36})\"");
     private static final Pattern QUESTION_ID =
-            Pattern.compile("\"questionId\":\"([0-9a-f-]{36})\"");
+            Pattern.compile("\"questionId\":\"([^\"]+)\"");
 
     @Autowired
     private EventProbe probe;
@@ -80,7 +80,7 @@ class SessionFlowTest extends IntegrationTest {
                 .andExpect(jsonPath("$.nextQuestionId").isNotEmpty())
                 .andReturn();
         assertThat(state.getResponse().getContentAsString()).doesNotContain("correctAlternative");
-        String q2 = firstMatch(Pattern.compile("\"nextQuestionId\":\"([0-9a-f-]{36})\""),
+        String q2 = firstMatch(Pattern.compile("\"nextQuestionId\":\"([^\"]+)\""),
                 state.getResponse().getContentAsString());
         assertThat(q2).isNotEqualTo(q1);
 
@@ -232,7 +232,8 @@ class SessionFlowTest extends IntegrationTest {
                         .content("{\"area\":\"ciencias-humanas\"}"))
                 .andExpect(status().isCreated())
                 .andReturn();
-        assertThat(s2.getResponse().getContentAsString()).doesNotContain(s1.firstQuestionId);
+        assertThat(s2.getResponse().getContentAsString())
+                .doesNotContain("\"" + s1.firstQuestionId + "\"");
     }
 
     // ---------- helpers ----------

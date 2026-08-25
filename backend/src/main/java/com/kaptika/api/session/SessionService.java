@@ -13,22 +13,28 @@ import com.kaptika.api.session.SessionExceptions.SessionClosedException;
 import com.kaptika.api.session.SessionExceptions.SessionNotFoundException;
 import com.kaptika.api.session.source.QuestionSource;
 import com.kaptika.api.session.source.QuestionSourceUnavailableException;
+import com.kaptika.api.session.source.SourcedQuestion;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Orquestra o ciclo de vida da sessão (FR-001..015). Eventos de domínio são
- * publicados dentro da transação de escrita; consumidores AFTER_COMMIT.
+ * Orquestra o ciclo de vida da sessão (FR-001..015). As questões vêm da
+ * enem.dev por CONSULTA ao vivo — nada de conteúdo/gabarito é persistido; o
+ * banco guarda só referência (source_id/ano/índice) e o resultado (acerto/erro).
+ * Eventos de domínio são publicados na transação de escrita; consumidores
+ * AFTER_COMMIT.
  */
 @Service
 public class SessionService {
@@ -37,65 +43,79 @@ public class SessionService {
     public record CreationOutcome(SessionResponse session, boolean created) {
     }
 
-    private static final Logger log = LoggerFactory.getLogger(SessionService.class);
     private static final int TARGET_QUESTIONS = 20;
     private static final Duration ACTIVE_SESSION_TTL = Duration.ofHours(24);
 
     private final StudySessionRepository sessions;
     private final SessionQuestionRepository sessionQuestions;
-    private final QuestionRepository questions;
     private final AnswerRepository answers;
     private final QuestionSource questionSource;
     private final ApplicationEventPublisher events;
+    private final SessionService self;
 
     public SessionService(StudySessionRepository sessions, SessionQuestionRepository sessionQuestions,
-            QuestionRepository questions, AnswerRepository answers, QuestionSource questionSource,
-            ApplicationEventPublisher events) {
+            AnswerRepository answers, QuestionSource questionSource,
+            ApplicationEventPublisher events, @Lazy SessionService self) {
         this.sessions = sessions;
         this.sessionQuestions = sessionQuestions;
-        this.questions = questions;
         this.answers = answers;
         this.questionSource = questionSource;
         this.events = events;
+        this.self = self;
     }
 
     /**
      * Cria a sessão da área (FR-001) ou devolve a ativa existente (FR-011).
-     * Sessão ativa além do TTL é expirada e substituída (edge de abandono).
+     * A checagem da ativa e a criação rodam em transações separadas: assim um
+     * POST concorrente que perde a corrida do índice único parcial devolve a
+     * sessão ativa (200) em vez de 500 (a transação da violação fica poluída).
      */
-    @Transactional
     public CreationOutcome createOrResume(UUID profileId, String areaRaw) {
         Area area = Area.parse(areaRaw);
 
-        var active = sessions.findByProfileIdAndStatus(profileId, StudySession.Status.ACTIVE);
+        Optional<StudySession> active = self.consumeActive(profileId);
         if (active.isPresent()) {
-            StudySession session = active.get();
-            if (session.getCreatedAt().isAfter(Instant.now().minus(ACTIVE_SESSION_TTL))) {
-                return new CreationOutcome(toResponse(session), false);
-            }
-            session.expire(Instant.now());
-            sessions.saveAndFlush(session);
+            return new CreationOutcome(toResponse(active.get()), false);
         }
-
-        List<Question> picked = assembleQuestions(profileId, area);
-        if (picked.isEmpty()) {
-            throw new QuestionSourceUnavailableException(
-                    "Sem questões disponíveis para a área no momento.");
-        }
-
         try {
-            StudySession session = sessions.saveAndFlush(new StudySession(profileId, area));
-            for (int i = 0; i < picked.size(); i++) {
-                sessionQuestions.save(new SessionQuestion(session.getId(), i + 1, picked.get(i)));
-            }
-            return new CreationOutcome(toResponse(session), true);
+            return self.createNew(profileId, area);
         } catch (DataIntegrityViolationException e) {
-            // corrida com outra requisição do mesmo estudante (unique parcial ACTIVE)
             StudySession existing = sessions
                     .findByProfileIdAndStatus(profileId, StudySession.Status.ACTIVE)
                     .orElseThrow(() -> e);
             return new CreationOutcome(toResponse(existing), false);
         }
+    }
+
+    /** Devolve a sessão ativa dentro do TTL; expira e descarta a abandonada. */
+    @Transactional
+    Optional<StudySession> consumeActive(UUID profileId) {
+        var active = sessions.findByProfileIdAndStatus(profileId, StudySession.Status.ACTIVE);
+        if (active.isEmpty()) {
+            return Optional.empty();
+        }
+        StudySession session = active.get();
+        if (session.getCreatedAt().isAfter(Instant.now().minus(ACTIVE_SESSION_TTL))) {
+            return Optional.of(session);
+        }
+        session.expire(Instant.now());
+        sessions.saveAndFlush(session);
+        return Optional.empty();
+    }
+
+    @Transactional
+    CreationOutcome createNew(UUID profileId, Area area) {
+        List<SourcedQuestion> picked = assembleQuestions(profileId, area);
+        if (picked.isEmpty()) {
+            throw new QuestionSourceUnavailableException(
+                    "Sem questões disponíveis para a área no momento.");
+        }
+        StudySession session = sessions.saveAndFlush(new StudySession(profileId, area));
+        for (int i = 0; i < picked.size(); i++) {
+            sessionQuestions.save(new SessionQuestion(session.getId(), i + 1, picked.get(i)));
+        }
+        sessionQuestions.flush();
+        return new CreationOutcome(toResponse(session), true);
     }
 
     /** Estado da sessão para retomada (FR-008); 404 se não for do estudante. */
@@ -105,9 +125,10 @@ public class SessionService {
     }
 
     /**
-     * Registra a resposta com correção server-side (FR-005). Reenvio da mesma
-     * alternativa é idempotente (FR-006); alterar resposta é recusado (FR-007).
-     * Última questão respondida encerra a sessão (FR-009).
+     * Registra a resposta com correção server-side (FR-005), consultando o
+     * gabarito ao vivo na enem.dev. Reenvio da mesma alternativa é idempotente
+     * (FR-006); alterar resposta é recusado (FR-007). Última questão respondida
+     * encerra a sessão (FR-009).
      */
     @Transactional
     public AnswerResult answer(UUID profileId, UUID sessionId, AnswerRequest request) {
@@ -117,16 +138,16 @@ public class SessionService {
         }
 
         List<SessionQuestion> ordered = sessionQuestions.findBySessionOrdered(sessionId);
-        Question question = ordered.stream()
-                .map(SessionQuestion::getQuestion)
-                .filter(q -> q.getId().equals(request.questionId()))
+        SessionQuestion ref = ordered.stream()
+                .filter(sq -> sq.getSourceId().equals(request.questionId()))
                 .findFirst()
                 .orElseThrow(() -> new AnswerConflictException(
                         "A questão informada não pertence a esta sessão."));
 
         String chosen = request.alternative().toUpperCase();
+        SourcedQuestion question = resolve(ref);
 
-        var existing = answers.findBySessionIdAndQuestionId(sessionId, question.getId());
+        var existing = answers.findBySessionIdAndSourceId(sessionId, ref.getSourceId());
         if (existing.isPresent()) {
             Answer prior = existing.get();
             if (!prior.getChosen().equalsIgnoreCase(chosen)) {
@@ -135,13 +156,13 @@ public class SessionService {
             return toResult(prior, question, session, countAnswered(session, ordered));
         }
 
-        boolean correct = question.getCorrectAlternative().equalsIgnoreCase(chosen);
+        boolean correct = question.correctAlternative().equalsIgnoreCase(chosen);
         Answer answer;
         try {
-            answer = answers.saveAndFlush(new Answer(sessionId, question.getId(), chosen, correct));
+            answer = answers.saveAndFlush(new Answer(sessionId, ref.getSourceId(), chosen, correct));
         } catch (DataIntegrityViolationException e) {
             // corrida de reenvio simultâneo: converge para a resposta vencedora
-            Answer prior = answers.findBySessionIdAndQuestionId(sessionId, question.getId())
+            Answer prior = answers.findBySessionIdAndSourceId(sessionId, ref.getSourceId())
                     .orElseThrow(() -> e);
             if (!prior.getChosen().equalsIgnoreCase(chosen)) {
                 throw new AnswerConflictException("Resposta já registrada para esta questão.");
@@ -152,7 +173,7 @@ public class SessionService {
         session.registerAnswer(correct);
 
         if (correct) {
-            events.publishEvent(new CorrectAnswerRecorded(profileId, sessionId, question.getId(),
+            events.publishEvent(new CorrectAnswerRecorded(profileId, sessionId, ref.getSourceId(),
                     session.getArea().name(), answer.getAnsweredAt(),
                     CorrectAnswerRecorded.keyFor(answer.getId())));
         }
@@ -185,31 +206,31 @@ public class SessionService {
     }
 
     /**
-     * Monta a lista de questões: cache local primeiro (excluindo acertos ≤30d),
-     * busca na fonte apenas para cobrir déficit (FR-003, FR-013). Falha da
-     * fonte com cache vazio → 503; com cache parcial → conduz com o disponível.
+     * Monta a lista de questões consultando a fonte ao vivo (FR-003) e
+     * excluindo os source_ids acertados nos últimos 30 dias (não-repetição —
+     * FR-013). Nada é persistido aqui; falha da fonte propaga (503).
      */
-    private List<Question> assembleQuestions(UUID profileId, Area area) {
-        List<Question> picked = questions.pickForSession(area.name(), profileId, TARGET_QUESTIONS);
-        if (picked.size() >= TARGET_QUESTIONS) {
-            return picked;
-        }
-        try {
-            int deficit = TARGET_QUESTIONS - picked.size();
-            List<Question> fetched = questionSource.fetch(area, deficit * 2);
-            fetched.stream()
-                    .filter(q -> !questions.existsBySourceId(q.getSourceId()))
-                    .forEach(questions::save);
-            questions.flush();
-            return questions.pickForSession(area.name(), profileId, TARGET_QUESTIONS);
-        } catch (QuestionSourceUnavailableException e) {
-            if (picked.isEmpty()) {
-                throw e;
+    private List<SourcedQuestion> assembleQuestions(UUID profileId, Area area) {
+        Set<String> recent = new HashSet<>(answers.recentCorrectSourceIds(profileId));
+        List<SourcedQuestion> fetched = questionSource.fetch(area, TARGET_QUESTIONS * 2);
+        List<SourcedQuestion> picked = new ArrayList<>();
+        for (SourcedQuestion q : fetched) {
+            if (recent.contains(q.sourceId())) {
+                continue;
             }
-            log.warn("enem.dev indisponível; sessão seguirá com {} questões do cache [{}]",
-                    picked.size(), e.getMessage());
-            return picked;
+            picked.add(q);
+            if (picked.size() >= TARGET_QUESTIONS) {
+                break;
+            }
         }
+        return picked;
+    }
+
+    /** Reconsulta o conteúdo/gabarito da referência; 503 se a fonte não devolver. */
+    private SourcedQuestion resolve(SessionQuestion ref) {
+        return questionSource.find(ref.getOriginYear(), ref.getQuestionIndex())
+                .orElseThrow(() -> new QuestionSourceUnavailableException(
+                        "Questão indisponível na fonte: " + ref.getSourceId()));
     }
 
     private StudySession owned(UUID profileId, UUID sessionId) {
@@ -218,19 +239,19 @@ public class SessionService {
     }
 
     private int countAnswered(StudySession session, List<SessionQuestion> ordered) {
-        return (int) answers.countBySessionIdAndQuestionIdIn(session.getId(),
-                ordered.stream().map(sq -> sq.getQuestion().getId()).collect(Collectors.toSet()));
+        return (int) answers.countBySessionIdAndSourceIdIn(session.getId(),
+                ordered.stream().map(SessionQuestion::getSourceId).collect(Collectors.toSet()));
     }
 
     private SessionResponse toResponse(StudySession session) {
         List<SessionQuestion> ordered = sessionQuestions.findBySessionOrdered(session.getId());
         List<Answer> given = answers.findBySessionId(session.getId());
-        Set<UUID> answeredIds = given.stream().map(Answer::getQuestionId).collect(Collectors.toSet());
+        Set<String> answeredIds = given.stream().map(Answer::getSourceId).collect(Collectors.toSet());
 
-        UUID nextQuestionId = !session.isActive() ? null
+        String nextQuestionId = !session.isActive() ? null
                 : ordered.stream()
-                        .filter(sq -> !answeredIds.contains(sq.getQuestion().getId()))
-                        .map(sq -> sq.getQuestion().getId())
+                        .map(SessionQuestion::getSourceId)
+                        .filter(id -> !answeredIds.contains(id))
                         .findFirst()
                         .orElse(null);
 
@@ -243,14 +264,15 @@ public class SessionService {
                 session.getCorrectCount(),
                 session.getWrongCount(),
                 session.getCreatedAt(),
-                ordered.stream().map(QuestionView::from).toList(),
-                given.stream().map(a -> new AnswerView(a.getQuestionId(), a.getChosen(), a.isCorrect())).toList(),
+                ordered.stream().map(sq -> QuestionView.from(sq, resolve(sq))).toList(),
+                given.stream().map(a -> new AnswerView(a.getSourceId(), a.getChosen(), a.isCorrect())).toList(),
                 nextQuestionId);
     }
 
-    private AnswerResult toResult(Answer answer, Question question, StudySession session, int answered) {
-        return new AnswerResult(question.getId(), answer.getChosen(), answer.isCorrect(),
-                question.getCorrectAlternative(), answered,
+    private AnswerResult toResult(Answer answer, SourcedQuestion question, StudySession session,
+            int answered) {
+        return new AnswerResult(answer.getSourceId(), answer.getChosen(), answer.isCorrect(),
+                question.correctAlternative(), answered,
                 sessionQuestions.findBySessionOrdered(session.getId()).size(),
                 session.getStatus().name());
     }

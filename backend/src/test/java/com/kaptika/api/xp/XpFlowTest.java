@@ -48,9 +48,9 @@ class XpFlowTest extends IntegrationTest {
 
     private static final Pattern SESSION_ID = Pattern.compile("\"id\":\"([0-9a-f-]{36})\"");
     private static final Pattern QUESTION_ID =
-            Pattern.compile("\"questionId\":\"([0-9a-f-]{36})\"");
+            Pattern.compile("\"questionId\":\"([^\"]+)\"");
     private static final Pattern NEXT_QUESTION_ID =
-            Pattern.compile("\"nextQuestionId\":\"([0-9a-f-]{36})\"");
+            Pattern.compile("\"nextQuestionId\":\"([^\"]+)\"");
 
     @Autowired
     private ApplicationEventPublisher publisher;
@@ -256,7 +256,7 @@ class XpFlowTest extends IntegrationTest {
     }
 
     private static CorrectAnswerRecorded event(UUID profileId, Instant answeredAt, String key) {
-        return new CorrectAnswerRecorded(profileId, UUID.randomUUID(), UUID.randomUUID(),
+        return new CorrectAnswerRecorded(profileId, UUID.randomUUID(), "2020-1",
                 "LINGUAGENS", answeredAt, key);
     }
 

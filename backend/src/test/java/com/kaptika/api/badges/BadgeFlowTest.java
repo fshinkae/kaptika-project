@@ -47,7 +47,7 @@ import org.springframework.test.web.servlet.MvcResult;
 class BadgeFlowTest extends IntegrationTest {
 
     private static final Pattern QUESTION_ID =
-            Pattern.compile("\"questionId\":\"([0-9a-f-]{36})\"");
+            Pattern.compile("\"questionId\":\"([^\"]+)\"");
     private static final Pattern SESSION_ID = Pattern.compile("\"id\":\"([0-9a-f-]{36})\"");
 
     @Autowired
@@ -342,7 +342,7 @@ class BadgeFlowTest extends IntegrationTest {
     }
 
     private static CorrectAnswerRecorded correctAnswer(UUID profileId) {
-        return new CorrectAnswerRecorded(profileId, UUID.randomUUID(), UUID.randomUUID(),
+        return new CorrectAnswerRecorded(profileId, UUID.randomUUID(), "2020-1",
                 "LINGUAGENS", Instant.now(), CorrectAnswerRecorded.keyFor(UUID.randomUUID()));
     }
 

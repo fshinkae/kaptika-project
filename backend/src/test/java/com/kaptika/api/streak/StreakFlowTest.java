@@ -33,7 +33,7 @@ class StreakFlowTest extends IntegrationTest {
 
     private static final Pattern SESSION_ID = Pattern.compile("\"id\":\"([0-9a-f-]{36})\"");
     private static final Pattern QUESTION_ID =
-            Pattern.compile("\"questionId\":\"([0-9a-f-]{36})\"");
+            Pattern.compile("\"questionId\":\"([^\"]+)\"");
 
     @Autowired
     private MutableClock clock;
