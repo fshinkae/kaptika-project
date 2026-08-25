@@ -27,7 +27,7 @@ class ProgressIntegrationTest extends IntegrationTest {
 
     private static final Pattern SESSION_ID = Pattern.compile("\"id\":\"([0-9a-f-]{36})\"");
     private static final Pattern QUESTION_ID =
-            Pattern.compile("\"questionId\":\"([0-9a-f-]{36})\"");
+            Pattern.compile("\"questionId\":\"([^\"]+)\"");
 
     @Test
     @DisplayName("ciclo completo do produto: sessão com acerto reflete em XP, streak e medalha no GET /me")

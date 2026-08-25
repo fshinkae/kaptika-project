@@ -13,6 +13,9 @@ spring:
       ddl-auto: validate # o schema é do Flyway; o Hibernate apenas confere
 
 kaptika:
+  cors:
+    # Origens do frontend permitidas (lista separada por vírgula). Dev: Vite em 5173.
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
   supabase:
     # JWKS do projeto Supabase (FR-010); ver .env de exemplo no README
     jwks-uri: ${SUPABASE_JWKS_URI:https://example.supabase.co/auth/v1/.well-known/jwks.json}
@@ -27,6 +30,13 @@ kaptika:
     read-timeout: 3s
     first-year: 2015
     last-year: 2023
+    # Intervalo mínimo entre chamadas de saída (rate limit enem.dev: 1 req/s)
+    min-request-interval: 1100ms
+    # Teto de páginas (50 questões cada) buscadas por ano; prova tem ~180 questões
+    max-pages-per-year: 4
+    # Cache em memória (efêmero) das questões consultadas — evita rebater a API
+    # na correção/retomada. NÃO é persistência; expira sozinho.
+    cache-ttl: 10m
 
 management:
   endpoints:

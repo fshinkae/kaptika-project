@@ -45,7 +45,7 @@ public class XpService {
         return true;
     }
 
-    private static String sourceOf(UUID sessionId, UUID questionId) {
-        return "session:" + sessionId + ":question:" + questionId;
+    private static String sourceOf(UUID sessionId, String questionRef) {
+        return "session:" + sessionId + ":question:" + questionRef;
     }
 }
