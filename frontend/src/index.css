@@ -1,12 +1,51 @@
 @import 'tailwindcss';
 
+/* Outfit é carregada por <link> no index.html: um @import aqui viria depois
+   das regras expandidas pelo Tailwind e o build o descartaria. */
+
+@theme {
+  --font-sans:
+    'Outfit', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* Marca Kaptika: íris quente e dessaturada no lugar do indigo padrão. Uma
+     só cor de destaque; todos os utilitários indigo-* herdam este tom. */
+  --color-indigo-50: #f5f4fc;
+  --color-indigo-100: #eae7f9;
+  --color-indigo-200: #d5cff2;
+  --color-indigo-300: #b3a6e6;
+  --color-indigo-500: #7d63d8;
+  --color-indigo-600: #6a4fc4;
+  --color-indigo-700: #563da4;
+}
+
 :root {
   color-scheme: light;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  background-color: #f8fafc;
+  font-family: var(--font-sans);
+  /* Fundo levemente aquecido na direção da marca + brilho ambiente sutil no
+     topo, para as telas não ficarem chapadas. */
+  background-color: #f7f6fb;
+  background-image: radial-gradient(
+    120% 60% at 50% -10%,
+    #efeafb 0%,
+    transparent 60%
+  );
+  background-attachment: fixed;
   color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Títulos respiram melhor sem palavra órfã e com tracking apertado. */
+h1,
+h2 {
+  text-wrap: balance;
+  letter-spacing: -0.015em;
 }

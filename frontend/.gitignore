@@ -26,3 +26,4 @@ dist-ssr
 # Ambiente local
 .env
 .env.local
+.vercel
