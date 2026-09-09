@@ -44,6 +44,14 @@ public class SessionController {
                 .body(outcome.session());
     }
 
+    /** Sessão ativa do estudante para retomada direta; 204 se não houver (FR-008). */
+    @GetMapping("/active")
+    public ResponseEntity<SessionResponse> active(@AuthenticationPrincipal Jwt jwt) {
+        return sessionService.findActive(profileIdResolver.resolve(jwt))
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
     @GetMapping("/{id}")
     public SessionResponse state(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id) {
         return sessionService.getState(profileIdResolver.resolve(jwt), id);

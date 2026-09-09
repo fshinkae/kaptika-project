@@ -143,6 +143,37 @@ class SessionFlowTest extends IntegrationTest {
     }
 
     @Test
+    @DisplayName("GET /sessions/active devolve a ativa e 204 quando não há")
+    void activeSessionLookup() throws Exception {
+        String token = TestTokens.valid(UUID.randomUUID());
+
+        mockMvc.perform(get("/sessions/active").header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
+
+        MvcResult created = mockMvc.perform(post("/sessions")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"area\":\"matematica\"}"))
+                .andExpect(status().isCreated())
+                .andReturn();
+        String sessionId = firstMatch(SESSION_ID, created.getResponse().getContentAsString());
+
+        mockMvc.perform(get("/sessions/active").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(sessionId))
+                .andExpect(jsonPath("$.area").value("matematica"))
+                .andExpect(jsonPath("$.status").value("ACTIVE"));
+
+        mockMvc.perform(post("/sessions/" + sessionId + "/finish")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk());
+
+        // encerrada deixa de ser ativa
+        mockMvc.perform(get("/sessions/active").header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
     @DisplayName("uma sessão ativa por estudante: POST repetido devolve a mesma (200)")
     void singleActiveSession() throws Exception {
         String token = TestTokens.valid(UUID.randomUUID());

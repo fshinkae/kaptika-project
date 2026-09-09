@@ -118,6 +118,14 @@ public class SessionService {
         return new CreationOutcome(toResponse(session), true);
     }
 
+    /**
+     * Sessão ativa do estudante, se houver (FR-008/FR-011): permite retomar sem
+     * exigir que o cliente guarde o id. Descarta a ativa fora do TTL.
+     */
+    public Optional<SessionResponse> findActive(UUID profileId) {
+        return self.consumeActive(profileId).map(this::toResponse);
+    }
+
     /** Estado da sessão para retomada (FR-008); 404 se não for do estudante. */
     @Transactional(readOnly = true)
     public SessionResponse getState(UUID profileId, UUID sessionId) {
