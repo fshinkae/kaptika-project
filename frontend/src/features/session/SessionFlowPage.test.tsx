@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { delay, http, HttpResponse } from 'msw'
@@ -60,6 +60,45 @@ function answerResult(overrides: Partial<AnswerResult> = {}): AnswerResult {
 }
 
 describe('SessionFlowPage', () => {
+  // Sem sessão ativa por padrão: a tela abre na escolha de área.
+  beforeEach(() => {
+    server.use(
+      http.get(`${API}/sessions/active`, () => new HttpResponse(null, { status: 204 })),
+    )
+  })
+
+  it('retoma direto a sessão ativa, sem passar pela escolha de área (FR-008)', async () => {
+    authenticate()
+    server.use(
+      http.get(`${API}/sessions/active`, () => HttpResponse.json(baseSession())),
+      http.get(`${API}/sessions/s1`, () => HttpResponse.json(baseSession())),
+    )
+    renderWithProviders(<SessionFlowPage />)
+
+    expect(await screen.findByRole('heading', { name: 'Enunciado 1' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Matemática' })).not.toBeInTheDocument()
+  })
+
+  it('pausar para o cronômetro e esconde a questão; retomar devolve', async () => {
+    authenticate()
+    server.use(
+      http.get(`${API}/sessions/active`, () => HttpResponse.json(baseSession())),
+      http.get(`${API}/sessions/s1`, () => HttpResponse.json(baseSession())),
+    )
+    const user = userEvent.setup()
+    renderWithProviders(<SessionFlowPage />)
+
+    await screen.findByRole('heading', { name: 'Enunciado 1' })
+    expect(screen.getByRole('timer', { name: 'Tempo de estudo' })).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Pausar' }))
+    expect(screen.getByRole('heading', { name: /sessão pausada/i })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Enunciado 1' })).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Retomar sessão' }))
+    expect(await screen.findByRole('heading', { name: 'Enunciado 1' })).toBeInTheDocument()
+  })
+
   it('inicia a sessão e mostra a 1ª questão SEM gabarito (FR-001, FR-003, SC-006)', async () => {
     authenticate()
     server.use(
@@ -78,6 +117,64 @@ describe('SessionFlowPage', () => {
     // Nenhum feedback de correção antes de responder
     expect(screen.queryByText(/você acertou/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/resposta incorreta/i)).not.toBeInTheDocument()
+  })
+
+  it('sessão ativa de outra área não vira sessão da área clicada (FR-011)', async () => {
+    authenticate()
+    // Backend devolve a ativa existente (200) em vez de criar na área pedida.
+    server.use(
+      http.post(`${API}/sessions`, () =>
+        HttpResponse.json(baseSession({ area: 'linguagens', answeredCount: 1 })),
+      ),
+      http.get(`${API}/sessions/s1`, () => HttpResponse.json(baseSession({ area: 'linguagens' }))),
+    )
+    const user = userEvent.setup()
+    renderWithProviders(<SessionFlowPage />)
+
+    await user.click(await screen.findByRole('button', { name: 'Matemática' }))
+
+    // Não entra direto na sessão de outra área: pergunta o que fazer.
+    expect(
+      await screen.findByRole('heading', { name: /sessão em andamento/i }),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Continuar em Linguagens/ })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Enunciado 1' })).not.toBeInTheDocument()
+  })
+
+  it('encerrar a sessão ativa inicia a área escolhida (FR-011)', async () => {
+    authenticate()
+    let created = 0
+    server.use(
+      http.post(`${API}/sessions`, () => {
+        created += 1
+        return created === 1
+          ? HttpResponse.json(baseSession({ area: 'linguagens' }))
+          : HttpResponse.json(baseSession({ id: 's2', area: 'matematica' }), { status: 201 })
+      }),
+      http.post(`${API}/sessions/s1/finish`, () =>
+        HttpResponse.json({
+          sessionId: 's1',
+          area: 'linguagens',
+          status: 'COMPLETED',
+          correctCount: 0,
+          wrongCount: 0,
+          totalQuestions: 2,
+          answeredCount: 0,
+          startedAt: '2026-07-20T00:00:00Z',
+          finishedAt: '2026-07-20T00:05:00Z',
+        }),
+      ),
+      http.get(`${API}/sessions/s2`, () =>
+        HttpResponse.json(baseSession({ id: 's2', area: 'matematica' })),
+      ),
+    )
+    const user = userEvent.setup()
+    renderWithProviders(<SessionFlowPage />)
+
+    await user.click(await screen.findByRole('button', { name: 'Matemática' }))
+    await user.click(await screen.findByRole('button', { name: /Encerrar e começar em Matemática/ }))
+
+    expect(await screen.findByRole('heading', { name: 'Enunciado 1' })).toBeInTheDocument()
   })
 
   it('confirmar mostra a correção e a alternativa correta vinda da API (FR-004)', async () => {

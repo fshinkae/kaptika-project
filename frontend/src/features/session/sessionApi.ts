@@ -85,6 +85,14 @@ export function createSession(area: AreaSlug): Promise<SessionResponse> {
   })
 }
 
+/**
+ * Sessão ativa do estudante, se houver (204 → null). Permite retomar sem
+ * passar pela escolha de área.
+ */
+export function getActiveSession(): Promise<SessionResponse | null> {
+  return apiFetch<SessionResponse | undefined>('/sessions/active').then((s) => s ?? null)
+}
+
 /** Estado atual da sessão para condução/retomada. */
 export function getSession(id: string): Promise<SessionResponse> {
   return apiFetch<SessionResponse>(`/sessions/${id}`)
