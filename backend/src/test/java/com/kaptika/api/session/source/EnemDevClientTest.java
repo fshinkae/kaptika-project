@@ -75,6 +75,34 @@ class EnemDevClientTest {
     }
 
     @Test
+    @DisplayName("mantém alternativas que são só imagem (sem texto)")
+    void keepsImageOnlyAlternatives() {
+        server.expect(requestTo(URL_OFFSET_0)).andRespond(withSuccess("""
+                {"questions": [
+                  {"index": 7, "discipline": "matematica", "title": "Gráficos",
+                   "alternativesIntroduction": "Qual gráfico representa?",
+                   "context": "Enunciado ![](https://enem.dev/2020/7/ctx.png)",
+                   "correctAlternative": "B",
+                   "alternatives": [
+                     {"letter": "A", "text": null, "file": "https://enem.dev/2020/7/a.png"},
+                     {"letter": "B", "text": null, "file": "https://enem.dev/2020/7/b.png"},
+                     {"letter": "C", "text": null, "file": "https://enem.dev/2020/7/c.png"},
+                     {"letter": "D", "text": "sem imagem", "file": null},
+                     {"letter": "E", "text": null, "file": null}]}
+                ]}""", MediaType.APPLICATION_JSON));
+
+        List<SourcedQuestion> questions = client.fetch(Area.MATEMATICA, 10);
+
+        assertThat(questions).hasSize(1);
+        // E não tem texto nem imagem: continua descartada (FR-014)
+        assertThat(questions.getFirst().alternatives()).hasSize(4);
+        assertThat(questions.getFirst().alternatives().getFirst().file())
+                .isEqualTo("https://enem.dev/2020/7/a.png");
+        assertThat(questions.getFirst().alternatives().getFirst().text()).isNull();
+        server.verify();
+    }
+
+    @Test
     @DisplayName("descarta questões sem gabarito válido ou sem alternativas (FR-014)")
     void discardsInvalidQuestions() {
         server.expect(requestTo(URL_OFFSET_0)).andRespond(withSuccess("""

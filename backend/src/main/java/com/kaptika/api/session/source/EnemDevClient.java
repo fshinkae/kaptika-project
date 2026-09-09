@@ -164,8 +164,13 @@ public class EnemDevClient implements QuestionSource {
             if (alt instanceof Map<?, ?> altMap) {
                 String letter = asText(((Map<String, Object>) altMap).get("letter"));
                 String text = asText(((Map<String, Object>) altMap).get("text"));
-                if (letter != null && VALID_LETTERS.contains(letter.toUpperCase()) && text != null) {
-                    alternatives.add(new SourcedQuestion.Alternative(letter.toUpperCase(), text));
+                String file = asText(((Map<String, Object>) altMap).get("file"));
+                // Alternativa vale por texto OU imagem: descartar as que só têm
+                // imagem mutilaria a questão (some a alternativa, às vezes a certa).
+                if (letter != null && VALID_LETTERS.contains(letter.toUpperCase())
+                        && (text != null || file != null)) {
+                    alternatives.add(
+                            new SourcedQuestion.Alternative(letter.toUpperCase(), text, file));
                 }
             }
         }

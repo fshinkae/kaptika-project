@@ -26,12 +26,13 @@ public final class SessionDtos {
         static QuestionView from(SessionQuestion sq, SourcedQuestion q) {
             return new QuestionView(sq.getSourceId(), sq.getPosition(), q.statement(), q.context(),
                     q.alternatives().stream()
-                            .map(a -> new AlternativeView(a.letter(), a.text()))
+                            .map(a -> new AlternativeView(a.letter(), a.text(), a.file()))
                             .toList());
         }
     }
 
-    public record AlternativeView(String letter, String text) {
+    /** {@code text} e {@code file} são alternativos: há alternativas só de imagem. */
+    public record AlternativeView(String letter, String text, String file) {
     }
 
     public record AnswerView(String questionId, String chosen, boolean correct) {
