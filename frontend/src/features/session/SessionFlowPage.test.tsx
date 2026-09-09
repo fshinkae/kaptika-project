@@ -21,9 +21,9 @@ function question(id: string, position: number) {
     statement: `Enunciado ${position}`,
     context: `Contexto ${position}`,
     alternatives: [
-      { letter: 'A', text: `Alt A ${position}` },
-      { letter: 'B', text: `Alt B ${position}` },
-      { letter: 'C', text: `Alt C ${position}` },
+      { letter: 'A', text: `Alt A ${position}`, file: null },
+      { letter: 'B', text: `Alt B ${position}`, file: null },
+      { letter: 'C', text: `Alt C ${position}`, file: null },
     ],
   }
 }
