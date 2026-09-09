@@ -13,10 +13,14 @@ export type AreaSlug = (typeof AREAS)[number]['slug']
 /** Status possíveis de uma sessão, refletindo o enum do backend. */
 export type SessionStatus = 'ACTIVE' | 'COMPLETED' | 'EXPIRED'
 
-/** Uma alternativa de questão (sem indicação de correta). */
+/**
+ * Uma alternativa de questão (sem indicação de correta). `text` e `file` são
+ * alternativos: há questões cujas alternativas são apenas imagem.
+ */
 export interface AlternativeView {
   letter: string
-  text: string
+  text: string | null
+  file: string | null
 }
 
 /**

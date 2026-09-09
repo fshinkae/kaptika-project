@@ -75,11 +75,11 @@ public class SessionTestSupport {
                 2020,
                 index,
                 List.of(
-                        new SourcedQuestion.Alternative("A", "Alternativa correta"),
-                        new SourcedQuestion.Alternative("B", "Distrator 1"),
-                        new SourcedQuestion.Alternative("C", "Distrator 2"),
-                        new SourcedQuestion.Alternative("D", "Distrator 3"),
-                        new SourcedQuestion.Alternative("E", "Distrator 4")));
+                        new SourcedQuestion.Alternative("A", "Alternativa correta", null),
+                        new SourcedQuestion.Alternative("B", "Distrator 1", null),
+                        new SourcedQuestion.Alternative("C", "Distrator 2", null),
+                        new SourcedQuestion.Alternative("D", "Distrator 3", null),
+                        new SourcedQuestion.Alternative("E", "Distrator 4", null)));
     }
 
     @Bean

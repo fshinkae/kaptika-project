@@ -19,6 +19,10 @@ public record SourcedQuestion(
         int index,
         List<Alternative> alternatives) {
 
-    public record Alternative(String letter, String text) {
+    /**
+     * Alternativa da questão. {@code text} e {@code file} são alternativos: há
+     * questões (sobretudo de matemática) cujas alternativas são só imagem.
+     */
+    public record Alternative(String letter, String text, String file) {
     }
 }

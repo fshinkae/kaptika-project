@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Button } from '../../components/Button'
-import type { AnswerResult, QuestionView } from './sessionApi'
+import { ZoomableImage } from '../../components/ZoomableImage'
+import { QuestionContext } from './QuestionContext'
+import type { AlternativeView, AnswerResult, QuestionView } from './sessionApi'
 
 /**
  * Uma questão por vez (FR-002). Exige seleção + confirmação antes de revelar
@@ -28,11 +30,7 @@ export function QuestionCard({
 
   return (
     <section className="flex flex-col gap-5" aria-labelledby="question-statement">
-      {question.context && (
-        <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-600">
-          {question.context}
-        </p>
-      )}
+      {question.context && <QuestionContext markdown={question.context} />}
 
       <h2
         id="question-statement"
@@ -58,6 +56,7 @@ export function QuestionCard({
                 value={alt.letter}
                 checked={selected === alt.letter}
                 onChange={() => setSelected(alt.letter)}
+                aria-label={alternativeLabel(alt)}
                 className="sr-only"
               />
               <span
@@ -66,7 +65,18 @@ export function QuestionCard({
               >
                 {alt.letter}
               </span>
-              <span className="text-slate-800">{alt.text}</span>
+              <span className="flex min-w-0 flex-1 flex-col gap-2">
+                {alt.text && <span className="text-slate-800">{alt.text}</span>}
+                {alt.file && (
+                  // Tocar a imagem escolhe a alternativa; só o botão "Ampliar"
+                  // abre a tela cheia.
+                  <ZoomableImage
+                    src={alt.file}
+                    alt={`Alternativa ${alt.letter}`}
+                    trigger="badge"
+                  />
+                )}
+              </span>
             </label>
           )
         })}
@@ -96,6 +106,13 @@ export function QuestionCard({
       )}
     </section>
   )
+}
+
+/** Rótulo acessível: alternativas só de imagem não têm texto para ler. */
+function alternativeLabel(alt: AlternativeView): string {
+  return alt.text
+    ? `Alternativa ${alt.letter}: ${alt.text}`
+    : `Alternativa ${alt.letter}: imagem`
 }
 
 type AltState = 'idle' | 'selected' | 'correct' | 'wrong'
