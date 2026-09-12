@@ -36,13 +36,20 @@ export function ZoomableImage({
     )
   }
 
+  // As imagens da enem.dev são digitalizações de tamanhos muito diferentes:
+  // uma fórmula estreita ao lado de um gráfico de página inteira. Exibir no
+  // tamanho natural, limitado pela largura do texto e por uma altura máxima,
+  // evita ampliar uma imagem pequena até borrar — e o zoom cobre o resto.
   const image = (
     <img
       src={src}
       alt={alt}
       loading="lazy"
+      decoding="async"
       onError={() => setFailed(true)}
-      className="w-full bg-white object-contain"
+      className={`block h-auto max-w-full object-contain ${
+        trigger === 'image' ? 'mx-auto max-h-[60vh]' : 'max-h-[40vh]'
+      }`}
     />
   )
 
@@ -55,13 +62,12 @@ export function ZoomableImage({
           type="button"
           onClick={() => setOpen(true)}
           aria-label={`Ampliar imagem: ${alt}`}
-          className={`relative block w-full cursor-zoom-in overflow-hidden rounded-lg
-            ring-1 ring-slate-200 focus-visible:outline-2 focus-visible:outline-offset-2
-            focus-visible:outline-indigo-600 ${className}`}
+          className={`${FRAME_CLASS} cursor-zoom-in focus-visible:outline-2
+            focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ${className}`}
         >
           {image}
-          <span aria-hidden className={BADGE_CLASS}>
-            Ampliar
+          <span aria-hidden className={HINT_CLASS}>
+            Toque para ampliar
           </span>
         </button>
         {viewer}
@@ -69,8 +75,10 @@ export function ZoomableImage({
     )
   }
 
+  // Na alternativa a moldura seria uma borda dentro da borda do próprio
+  // cartão, e centralizar afastaria a imagem da letra: alinha à esquerda.
   return (
-    <span className={`relative block overflow-hidden rounded-lg ring-1 ring-slate-200 ${className}`}>
+    <span className={`block ${className}`}>
       {image}
       <button
         type="button"
@@ -82,8 +90,9 @@ export function ZoomableImage({
           setOpen(true)
         }}
         aria-label={`Ampliar imagem: ${alt}`}
-        className={`${BADGE_CLASS} min-h-[32px] cursor-zoom-in hover:bg-slate-900
-          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
+        className="mt-1 block min-h-[32px] rounded-lg pr-2 text-xs font-medium
+          text-indigo-700 hover:bg-indigo-50 focus-visible:outline-2 focus-visible:outline-offset-2
+          focus-visible:outline-indigo-600"
       >
         Ampliar
       </button>
@@ -92,8 +101,11 @@ export function ZoomableImage({
   )
 }
 
-const BADGE_CLASS =
-  'absolute bottom-2 right-2 rounded-full bg-slate-900/70 px-2 py-1 text-xs font-medium text-white'
+/** Moldura que abraça a imagem em vez de esticá-la à largura do container. */
+const FRAME_CLASS =
+  'mx-auto block w-fit max-w-full rounded-lg bg-white p-2 ring-1 ring-slate-200'
+
+const HINT_CLASS = 'mt-1 block text-right text-[11px] font-medium text-slate-400'
 
 const ZOOM_STEPS = [1, 2, 3]
 
@@ -130,6 +142,9 @@ function ImageViewer({ src, alt, onClose }: { src: string; alt: string; onClose:
 
   const zoom = ZOOM_STEPS[step]
   const zoomed = zoom > 1
+  // O botão anuncia o que o próximo toque faz, não o zoom atual.
+  const nextZoom = ZOOM_STEPS[(step + 1) % ZOOM_STEPS.length]
+  const zoomActionLabel = nextZoom === 1 ? 'Ajustar à tela' : `Ampliar (${nextZoom}x)`
 
   return createPortal(
     <div
@@ -145,7 +160,7 @@ function ImageViewer({ src, alt, onClose }: { src: string; alt: string; onClose:
           className="min-h-[44px] rounded-xl px-4 text-sm font-semibold text-white ring-1 ring-white/30
             hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         >
-          {zoomed ? `Reduzir (${zoom}x)` : 'Ampliar'}
+          {zoomActionLabel}
         </button>
         <button
           ref={closeRef}
@@ -172,8 +187,11 @@ function ImageViewer({ src, alt, onClose }: { src: string; alt: string; onClose:
             setStep((s) => (s + 1) % ZOOM_STEPS.length)
           }}
           style={{ width: zoomed ? `${zoom * 100}%` : undefined }}
-          className={`mx-auto bg-white ${
-            zoomed ? 'max-w-none cursor-zoom-out' : 'max-h-full max-w-full object-contain cursor-zoom-in'
+          // Sem zoom, ocupa a largura da tela (aqui ampliar É o objetivo,
+          // então uma imagem pequena sobe até caber) com a altura seguindo a
+          // proporção; com zoom, cresce além da tela e o container rola.
+          className={`mx-auto h-auto bg-white object-contain ${
+            zoomed ? 'max-w-none cursor-zoom-out' : 'w-full max-h-full cursor-zoom-in'
           }`}
         />
       </div>
