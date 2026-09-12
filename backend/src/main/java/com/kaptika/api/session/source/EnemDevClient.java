@@ -36,6 +36,8 @@ public class EnemDevClient implements QuestionSource {
 
     private static final Logger log = LoggerFactory.getLogger(EnemDevClient.class);
     private static final Set<String> VALID_LETTERS = Set.of("A", "B", "C", "D", "E");
+    /** Placeholder que a própria enem.dev serve quando não tem a imagem. */
+    private static final String MISSING_IMAGE = "broken-image";
     private static final int MAX_YEAR_ATTEMPTS = 3;
     private static final int PAGE_LIMIT = 50;
     private static final int MAX_429_ATTEMPTS = 3;
@@ -128,7 +130,8 @@ public class EnemDevClient implements QuestionSource {
     /**
      * Normaliza para o valor transitório; retorna null (descarta) quando a
      * disciplina não bate (quando {@code expectedArea} é dado), o gabarito é
-     * inválido, o índice falta, ou há menos de 2 alternativas válidas (FR-014).
+     * inválido, o índice falta, falta alguma imagem na fonte, ou há menos de 2
+     * alternativas válidas (FR-014).
      */
     @SuppressWarnings("unchecked")
     private SourcedQuestion normalize(Map<String, Object> raw, Area expectedArea, int year) {
@@ -156,6 +159,12 @@ public class EnemDevClient implements QuestionSource {
         if (statement == null) {
             return null;
         }
+        String context = asText(raw.get("context"));
+        // A questão remete à figura ("representada na figura"), então sem ela
+        // fica insolúvel: melhor não servi-la do que servir um buraco.
+        if (hasMissingImage(statement) || hasMissingImage(context)) {
+            return null;
+        }
         if (!(raw.get("alternatives") instanceof List<?> rawAlternatives)) {
             return null;
         }
@@ -167,6 +176,9 @@ public class EnemDevClient implements QuestionSource {
                 String file = asText(((Map<String, Object>) altMap).get("file"));
                 // Alternativa vale por texto OU imagem: descartar as que só têm
                 // imagem mutilaria a questão (some a alternativa, às vezes a certa).
+                if (hasMissingImage(file)) {
+                    return null; // alternativa sem a imagem: a questão perde uma opção
+                }
                 if (letter != null && VALID_LETTERS.contains(letter.toUpperCase())
                         && (text != null || file != null)) {
                     alternatives.add(
@@ -182,7 +194,7 @@ public class EnemDevClient implements QuestionSource {
         }
         int index = indexNumber.intValue();
         String sourceId = year + "-" + index;
-        return new SourcedQuestion(sourceId, area, statement, asText(raw.get("context")),
+        return new SourcedQuestion(sourceId, area, statement, context,
                 correct.toUpperCase(), year, index, alternatives);
     }
 
@@ -267,6 +279,10 @@ public class EnemDevClient implements QuestionSource {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    private static boolean hasMissingImage(String value) {
+        return value != null && value.contains(MISSING_IMAGE);
     }
 
     private static boolean hasMore(Map<String, Object> body) {

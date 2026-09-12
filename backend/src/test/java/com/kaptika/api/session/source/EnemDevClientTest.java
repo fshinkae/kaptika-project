@@ -103,6 +103,35 @@ class EnemDevClientTest {
     }
 
     @Test
+    @DisplayName("descarta questão cuja imagem a fonte não tem (FR-014)")
+    void discardsQuestionsWithMissingImages() {
+        server.expect(requestTo(URL_OFFSET_0)).andRespond(withSuccess("""
+                {"questions": [
+                  {"index": 1, "discipline": "linguagens", "title": "Sem a figura",
+                   "alternativesIntroduction": "A figura mostra",
+                   "context": "A estrutura ![](https://enem.dev/broken-image.svg) da molécula",
+                   "correctAlternative": "A",
+                   "alternatives": [{"letter": "A", "text": "a"}, {"letter": "B", "text": "b"}]},
+                  {"index": 2, "discipline": "linguagens", "title": "Alternativa sem imagem",
+                   "alternativesIntroduction": "Qual gráfico?",
+                   "correctAlternative": "A",
+                   "alternatives": [
+                     {"letter": "A", "text": null, "file": "https://enem.dev/broken-image.svg"},
+                     {"letter": "B", "text": null, "file": "https://enem.dev/2020/2/b.png"}]},
+                  {"index": 3, "discipline": "linguagens", "title": "Íntegra",
+                   "alternativesIntroduction": "Assinale",
+                   "context": "Texto com ![](https://enem.dev/2020/3/ok.png)",
+                   "correctAlternative": "A",
+                   "alternatives": [{"letter": "A", "text": "a"}, {"letter": "B", "text": "b"}]}
+                ]}""", MediaType.APPLICATION_JSON));
+
+        List<SourcedQuestion> questions = client.fetch(Area.LINGUAGENS, 10);
+
+        assertThat(questions).extracting(SourcedQuestion::sourceId).containsExactly("2020-3");
+        server.verify();
+    }
+
+    @Test
     @DisplayName("descarta questões sem gabarito válido ou sem alternativas (FR-014)")
     void discardsInvalidQuestions() {
         server.expect(requestTo(URL_OFFSET_0)).andRespond(withSuccess("""
