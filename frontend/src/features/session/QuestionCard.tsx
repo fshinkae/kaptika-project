@@ -68,12 +68,17 @@ export function QuestionCard({
               <span className="flex min-w-0 flex-1 flex-col gap-2">
                 {alt.text && <span className="text-slate-800">{alt.text}</span>}
                 {alt.file && (
-                  // Tocar a imagem escolhe a alternativa; só o botão "Ampliar"
-                  // abre a tela cheia.
+                  // Tocar a imagem a amplia; escolher se faz tocando o cartão
+                  // ao redor ou pelo botão dentro da tela cheia.
                   <ZoomableImage
                     src={alt.file}
                     alt={`Alternativa ${alt.letter}`}
-                    trigger="badge"
+                    // A tela cheia é um portal fora do <fieldset>, então o
+                    // disabled dele não a alcança: retira a escolha na mão.
+                    onSelect={
+                      answered || isSubmitting ? undefined : () => setSelected(alt.letter)
+                    }
+                    selectLabel={`Escolher alternativa ${alt.letter}`}
                   />
                 )}
               </span>
