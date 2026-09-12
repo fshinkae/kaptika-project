@@ -46,6 +46,25 @@ describe('QuestionCard — imagens', () => {
     expect(screen.getByText('TEXTO I').tagName).toBe('STRONG')
   })
 
+  it('no computador, os controles de zoom e o teclado funcionam', async () => {
+    const user = userEvent.setup()
+    renderCard()
+
+    await user.click(screen.getByRole('button', { name: 'Ampliar imagem: Imagem da questão' }))
+    expect(screen.getByText('100%')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Reduzir' })).toBeDisabled()
+
+    await user.click(screen.getByRole('button', { name: 'Ampliar' }))
+    expect(screen.getByText('140%')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Reduzir' })).toBeEnabled()
+
+    await user.keyboard('+')
+    expect(screen.getByText('196%')).toBeInTheDocument()
+
+    await user.keyboard('0')
+    expect(screen.getByText('100%')).toBeInTheDocument()
+  })
+
   it('abre e fecha a imagem em tela cheia', async () => {
     const user = userEvent.setup()
     renderCard()
@@ -61,22 +80,42 @@ describe('QuestionCard — imagens', () => {
     expect(document.body.style.overflow).not.toBe('hidden')
   })
 
-  it('alternativa só de imagem: tocar a imagem seleciona, "Ampliar" só amplia', async () => {
+  it('alternativa só de imagem: tocar amplia e dá para escolher de lá', async () => {
     const user = userEvent.setup()
     renderCard()
 
     const imageAlternative = screen.getByRole('radio', { name: 'Alternativa A: imagem' })
     expect(screen.getByRole('img', { name: 'Alternativa A' })).toBeInTheDocument()
 
+    // tocar a imagem amplia, sem escolher por baixo do pano
     await user.click(screen.getByRole('img', { name: 'Alternativa A' }))
-    expect(imageAlternative).toBeChecked()
-
-    await user.click(screen.getByRole('radio', { name: /Alternativa B/ }))
-    await user.click(screen.getByRole('button', { name: 'Ampliar imagem: Alternativa A' }))
-
     expect(screen.getByRole('dialog')).toBeInTheDocument()
-    // ampliar não muda a escolha
     expect(imageAlternative).not.toBeChecked()
+
+    // a escolha fica a um toque de distância, dentro da própria tela cheia
+    await user.click(screen.getByRole('button', { name: 'Escolher alternativa A' }))
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(imageAlternative).toBeChecked()
+  })
+
+  it('tocar o cartão da alternativa (fora da imagem) escolhe direto', async () => {
+    const user = userEvent.setup()
+    renderCard()
+
+    await user.click(screen.getByRole('radio', { name: 'Alternativa A: imagem' }))
+
+    expect(screen.getByRole('radio', { name: 'Alternativa A: imagem' })).toBeChecked()
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('nenhum link "Ampliar": a própria imagem é o gatilho', () => {
+    renderCard()
+
+    expect(screen.queryByRole('button', { name: 'Ampliar' })).not.toBeInTheDocument()
+    expect(screen.queryByText('Toque para ampliar')).not.toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Ampliar imagem: Imagem da questão' }),
+    ).toContainElement(screen.getByRole('img', { name: 'Imagem da questão' }))
   })
 
   it('imagem ausente na fonte vira aviso, não imagem quebrada', () => {
