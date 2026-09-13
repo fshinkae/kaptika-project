@@ -65,6 +65,29 @@ describe('QuestionCard — imagens', () => {
     expect(screen.getByText('100%')).toBeInTheDocument()
   })
 
+  it('a tela cheia sobrevive a re-render da questão (ex.: tique do cronômetro)', async () => {
+    const user = userEvent.setup()
+    const { rerender } = renderCard()
+
+    await user.click(screen.getByRole('button', { name: /Ampliar imagem: Imagem da questão/ }))
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+
+    // O cronômetro re-renderiza a tela a cada segundo; a imagem não pode
+    // remontar e fechar a tela cheia por causa disso.
+    rerender(
+      <QuestionCard
+        question={question()}
+        feedback={null}
+        onConfirm={() => {}}
+        isSubmitting={false}
+        onNext={() => {}}
+        nextLabel="Próxima questão"
+      />,
+    )
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+  })
+
   it('abre e fecha a imagem em tela cheia', async () => {
     const user = userEvent.setup()
     renderCard()
