@@ -59,7 +59,6 @@ export function ZoomableImage({
         <img
           src={src}
           alt={alt}
-          loading="lazy"
           decoding="async"
           onError={() => setFailed(true)}
           className="block h-auto max-h-[60vh] max-w-full object-contain"

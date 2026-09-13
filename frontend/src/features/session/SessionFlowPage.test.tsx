@@ -64,6 +64,20 @@ describe('SessionFlowPage', () => {
   beforeEach(() => {
     server.use(
       http.get(`${API}/sessions/active`, () => new HttpResponse(null, { status: 204 })),
+      // Resumo lê o progresso da API depois de encerrar (RES-1)
+      http.get(`${API}/me/xp`, () =>
+        HttpResponse.json({ xpTotal: 10, level: 1, xpToNextLevel: 90, xpInPeriod: 10 }),
+      ),
+      http.get(`${API}/me/streak`, () =>
+        HttpResponse.json({
+          current: 1,
+          record: 1,
+          freezes: 2,
+          metToday: true,
+          brokenSinceLastAccess: false,
+          brokenAt: null,
+        }),
+      ),
     )
   })
 
@@ -250,12 +264,8 @@ describe('SessionFlowPage', () => {
       http.post(`${API}/sessions`, () => HttpResponse.json(baseSession(), { status: 201 })),
       http.get(`${API}/sessions/s1`, () => {
         getCalls += 1
-        // 1ª chamada: q1 pendente; após responder e avançar: q2 pendente
-        return HttpResponse.json(
-          getCalls <= 1
-            ? baseSession()
-            : baseSession({ answeredCount: 1, nextQuestionId: 'q2' }),
-        )
+        // Só é consultado depois de responder: q2 passa a ser a pendente
+        return HttpResponse.json(baseSession({ answeredCount: 1, nextQuestionId: 'q2' }))
       }),
       http.post(`${API}/sessions/s1/answers`, () => HttpResponse.json(answerResult())),
     )
@@ -269,6 +279,7 @@ describe('SessionFlowPage', () => {
 
     expect(await screen.findByRole('heading', { name: 'Enunciado 2' })).toBeInTheDocument()
     expect(screen.getByText('2/2')).toBeInTheDocument()
+    expect(getCalls).toBe(1)
   })
 
   it('encerra a sessão e mostra o resumo (FR-007, FR-008)', async () => {
@@ -299,6 +310,10 @@ describe('SessionFlowPage', () => {
 
     expect(await screen.findByRole('heading', { name: 'Sessão concluída' })).toBeInTheDocument()
     expect(screen.getByText('Acertos')).toBeInTheDocument()
+    // Progresso e motivo para voltar, lidos da API (RES-1)
+    expect(await screen.findByText('Ofensiva: 1 dia.')).toBeInTheDocument()
+    expect(screen.getByText('Volte amanhã para manter.')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Voltar ao início' })).toHaveAttribute('href', '/')
   })
 
   it('responder a última questão leva ao resumo (fim de sessão)', async () => {
@@ -366,28 +381,65 @@ describe('SessionFlowPage', () => {
     expect(screen.getByRole('button', { name: 'Matemática' })).toBeEnabled()
   })
 
-  it('erro ao carregar a sessão oferece tentar novamente (FR-009)', async () => {
+  it('erro ao buscar a próxima questão oferece tentar novamente (FR-009)', async () => {
     authenticate()
     let getCalls = 0
     server.use(
       http.post(`${API}/sessions`, () => HttpResponse.json(baseSession(), { status: 201 })),
+      http.post(`${API}/sessions/s1/answers`, () => HttpResponse.json(answerResult())),
       http.get(`${API}/sessions/s1`, () => {
         getCalls += 1
-        // 1ª carga falha; retry funciona
+        // 1ª consulta falha; repetir traz a próxima questão
         return getCalls <= 1
           ? new HttpResponse(null, { status: 500 })
-          : HttpResponse.json(baseSession())
+          : HttpResponse.json(baseSession({ answeredCount: 1, nextQuestionId: 'q2' }))
       }),
     )
     const user = userEvent.setup()
     renderWithProviders(<SessionFlowPage />)
 
     await user.click(await screen.findByRole('button', { name: 'Matemática' }))
-    // A criação semeia o cache, então forço um refetch: primeiro invalido via retry.
-    // O erro aparece quando o refetch falha; garantimos o caminho de retry.
-    const retry = await screen.findByRole('button', { name: 'Tentar novamente' })
-    await user.click(retry)
+    await user.click(await screen.findByRole('radio', { name: /Alt A 1/ }))
+    await user.click(screen.getByRole('button', { name: 'Confirmar' }))
+    await user.click(await screen.findByRole('button', { name: 'Próxima questão' }))
+    await user.click(await screen.findByRole('button', { name: 'Tentar novamente' }))
+
+    expect(await screen.findByRole('heading', { name: 'Enunciado 2' })).toBeInTheDocument()
+  })
+
+  it('conduz a partir da sessão devolvida na criação, sem GET extra (SES-4)', async () => {
+    authenticate()
+    let getCalls = 0
+    server.use(
+      http.post(`${API}/sessions`, () => HttpResponse.json(baseSession(), { status: 201 })),
+      http.get(`${API}/sessions/s1`, () => {
+        getCalls += 1
+        return HttpResponse.json(baseSession())
+      }),
+    )
+    const user = userEvent.setup()
+    renderWithProviders(<SessionFlowPage />)
+
+    await user.click(await screen.findByRole('button', { name: 'Matemática' }))
 
     expect(await screen.findByRole('heading', { name: 'Enunciado 1' })).toBeInTheDocument()
+    expect(getCalls).toBe(0)
+  })
+
+  it('explica a espera enquanto a sessão é criada (SES-1)', async () => {
+    authenticate()
+    server.use(
+      http.post(`${API}/sessions`, async () => {
+        await delay('infinite')
+        return HttpResponse.json(baseSession(), { status: 201 })
+      }),
+    )
+    const user = userEvent.setup()
+    renderWithProviders(<SessionFlowPage />)
+
+    await user.click(await screen.findByRole('button', { name: 'Matemática' }))
+
+    expect(await screen.findByText('Separando questões de Matemática…')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Linguagens' })).not.toBeInTheDocument()
   })
 })
