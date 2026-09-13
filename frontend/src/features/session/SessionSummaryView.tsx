@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Button, buttonClassName } from '../../components/Button'
 import { ErrorState } from '../../components/ErrorState'
 import { FlameIcon } from '../../components/Icons'
+import { Skeleton } from '../../components/Skeleton'
 import { formatDays, formatInt } from '../../lib/format'
 import { LevelMeter, useXpSummary } from '../xp'
 import { getStreak } from '../streak'
@@ -54,13 +55,7 @@ function SessionProgressReport() {
   const streak = useQuery({ queryKey: ['streak'], queryFn: getStreak })
 
   if (xp.isPending || streak.isPending) {
-    return (
-      <div
-        role="status"
-        aria-label="Carregando seu progresso"
-        className="h-[148px] rounded-2xl bg-slate-200/60 motion-safe:animate-pulse"
-      />
-    )
+    return <Skeleton label="Carregando seu progresso…" className="h-[148px]" />
   }
   if (xp.isError || streak.isError) {
     return (
