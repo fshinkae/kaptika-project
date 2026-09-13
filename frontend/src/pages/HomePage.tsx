@@ -1,21 +1,31 @@
 import { Link } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import { XpPanel } from '../features/xp'
-import { StreakPanel } from '../features/streak'
+import { StreakPanel, getStreak } from '../features/streak'
 
 /** Tela inicial autenticada: progresso do estudante + atalhos para estudar e explorar. */
 export function HomePage() {
+  // Recorde 0 = nunca concluiu uma sessão com resposta (meta da ofensiva): o
+  // convite fala da primeira sessão. Mesmo cache do painel, sem requisição extra.
+  const streak = useQuery({ queryKey: ['streak'], queryFn: getStreak })
+  const firstTime = streak.data?.record === 0
+
   return (
     <main className="mx-auto flex w-full max-w-md flex-col gap-5 px-5 pt-8 pb-12">
       <header>
         <h1 className="text-3xl font-bold text-slate-900">Bora estudar?</h1>
-        <p className="mt-1 text-slate-600">Sessões curtas de ENEM, no seu ritmo.</p>
+        <p className="mt-1 text-slate-600">
+          {firstTime
+            ? 'Escolha uma área, responda e veja o gabarito na hora.'
+            : 'Sessões curtas de ENEM, no seu ritmo.'}
+        </p>
       </header>
 
       <Link
         to="/estudar"
         className="flex min-h-[56px] items-center justify-center rounded-2xl bg-indigo-600 px-4 text-lg font-semibold text-white shadow-lg shadow-indigo-600/25 transition duration-200 hover:-translate-y-px hover:bg-indigo-700 active:translate-y-0 active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
       >
-        Iniciar sessão de estudo
+        {firstTime ? 'Começar primeira sessão' : 'Iniciar sessão de estudo'}
       </Link>
 
       <XpPanel />

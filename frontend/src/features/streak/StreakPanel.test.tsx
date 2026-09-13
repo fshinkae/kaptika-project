@@ -36,6 +36,15 @@ describe('StreakPanel', () => {
     expect(screen.getByText('dias seguidos')).toBeInTheDocument()
     expect(screen.getByText('12 dias')).toBeInTheDocument() // recorde
     expect(screen.getByText('2')).toBeInTheDocument() // freezes
+    expect(screen.getByText('Proteções')).toBeInTheDocument() // COPY-1
+  })
+
+  it('usa singular para 1 dia (COPY-1)', async () => {
+    authenticate()
+    mockStreak({ current: 1, record: 1 })
+    renderWithProviders(<StreakPanel />)
+
+    expect(await screen.findByText('1 dia')).toBeInTheDocument()
   })
 
   it('mostra o badge de meta cumprida quando metToday (FR-002)', async () => {
@@ -77,6 +86,8 @@ describe('StreakPanel', () => {
 
     expect(await screen.findByText('Comece sua ofensiva hoje!')).toBeInTheDocument()
     expect(screen.queryByText('Sua ofensiva foi reiniciada')).not.toBeInTheDocument()
+    // Sem recorde 0 nem proteções para quem está começando (HOME-1)
+    expect(screen.queryByText('Recorde')).not.toBeInTheDocument()
   })
 
   it('mostra estado de carregando enquanto busca (FR-007)', async () => {

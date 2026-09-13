@@ -31,6 +31,7 @@ coordenador plugar em rota/tela depois.
   coordenador replicar boilerplate de estados.
 - `enum` proibido (erasableSyntaxOnly): tipos como `interface` + campos explícitos; `brokenAt`
   como `string | null` (serialização JSON do `Instant`).
+- Auditoria de conversão (2026-09-13): convite inicial compacto e sem recorde 0/proteções para quem nunca manteve ofensiva; carregando/erro no tamanho do card (HOME-1). "Congelamentos" vira "Proteções" com a regra explicada, e dias no singular/plural (COPY-1). A Home usa `record === 0` (mesmo cache `['streak']`) para convidar à primeira sessão.
 
 ## Abordagem técnica
 
