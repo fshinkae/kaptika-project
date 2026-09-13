@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Outlet, useOutletContext } from 'react-router-dom'
+import { BadgeCelebrationHost } from '../features/badges'
 import { BottomNav } from './BottomNav'
 
 interface ShellContext {
@@ -13,6 +14,7 @@ export function AppShell() {
     <div className={`min-h-dvh ${focusMode ? '' : 'pb-16'}`}>
       <Outlet context={{ setFocusMode } satisfies ShellContext} />
       {!focusMode && <BottomNav />}
+      <BadgeCelebrationHost />
     </div>
   )
 }

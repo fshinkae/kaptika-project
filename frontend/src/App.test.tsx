@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
@@ -18,6 +18,15 @@ const PROFILE = {
 }
 
 describe('App routing', () => {
+  // O AppShell consulta as medalhas para celebrar conquistas novas (MED-1).
+  beforeEach(() => {
+    server.use(
+      http.get(`${API}/me/badges`, () =>
+        HttpResponse.json({ badges: [], achievedCount: 0, totalCount: 0 }),
+      ),
+    )
+  })
+
   it('rota privada sem sessão redireciona ao login (FR-004, SC-002)', async () => {
     renderWithProviders(<App />, { route: '/perfil' })
     expect(await screen.findByRole('button', { name: 'Entrar' })).toBeInTheDocument()

@@ -11,12 +11,21 @@ export function BadgeCelebration({ badge, onDismiss }: { badge: BadgeView; onDis
   const dialogRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    const opener = document.activeElement
     dialogRef.current?.focus()
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onDismiss()
+      // Diálogo modal com um único controle: Tab não vaza para a página por trás.
+      if (e.key === 'Tab') {
+        e.preventDefault()
+        dialogRef.current?.querySelector('button')?.focus()
+      }
     }
     document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      if (opener instanceof HTMLElement) opener.focus()
+    }
   }, [onDismiss, badge.slug])
 
   return (

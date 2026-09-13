@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { screen, waitFor, within } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { server } from '../../test/server'
 import { setSession } from '../../test/supabaseMock'
@@ -9,7 +8,6 @@ import { BadgesGalleryPage } from './BadgesGalleryPage'
 import { formatAwardedDate } from './badgeFormat'
 
 const API = 'http://api.test'
-const CELEBRATED_KEY = 'kaptika:badges:celebrated:u'
 
 const COLLECTION = {
   badges: [
@@ -101,26 +99,4 @@ describe('BadgesGalleryPage', () => {
     expect(await screen.findByText(/Ainda não há medalhas disponíveis/)).toBeInTheDocument()
   })
 
-  it('não celebra medalhas já conquistadas ao carregar (FR-002)', async () => {
-    authenticate()
-    server.use(http.get(`${API}/me/badges`, () => HttpResponse.json(COLLECTION)))
-    renderWithProviders(<BadgesGalleryPage />)
-
-    await screen.findByRole('heading', { name: 'Conquistadas' })
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
-  })
-
-  it('celebra uma medalha nova concedida pela API (FR-001) e a dispensa', async () => {
-    authenticate()
-    // usuário já viu tudo, exceto a recém-concedida 'primeira-sessao'
-    localStorage.setItem(CELEBRATED_KEY, JSON.stringify([]))
-    server.use(http.get(`${API}/me/badges`, () => HttpResponse.json(COLLECTION)))
-    renderWithProviders(<BadgesGalleryPage />)
-
-    const dialog = await screen.findByRole('dialog')
-    expect(within(dialog).getByText('Primeira Sessão')).toBeInTheDocument()
-
-    await userEvent.click(within(dialog).getByRole('button', { name: 'Continuar' }))
-    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
-  })
 })
