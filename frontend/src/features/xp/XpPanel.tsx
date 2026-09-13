@@ -25,9 +25,9 @@ export function XpPanel() {
   }
   if (query.data.xpTotal === 0) {
     return (
-      <section aria-label="Seu XP e nível" className="rounded-2xl bg-white p-5 ring-1 ring-slate-100">
-        <p className="text-base font-semibold text-slate-800">Você ainda não ganhou XP.</p>
-        <p className="mt-1 text-sm text-slate-600">
+      <section aria-label="Seu XP e nível" className="rounded-card bg-surface p-5 ring-1 ring-line">
+        <p className="text-base font-semibold text-ink">Você ainda não ganhou XP.</p>
+        <p className="mt-1 text-sm text-ink-muted">
           Cada acerto numa sessão soma XP e faz você subir de nível.
         </p>
       </section>
@@ -40,14 +40,16 @@ export function XpPanel() {
 function XpPanelView({ summary }: { summary: XpSummary }) {
   const { xpTotal, level, xpToNextLevel, xpInPeriod } = summary
   return (
-    <section aria-label="Seu XP e nível" className="rounded-2xl bg-white p-5 ring-1 ring-slate-100">
+    <section aria-label="Seu XP e nível" className="rounded-card bg-surface p-5 ring-1 ring-line">
       <div className="flex items-baseline justify-between gap-3">
         <div>
-          <p className="text-xs font-medium text-slate-600">XP total</p>
-          <p className="mt-1 text-3xl font-bold tabular-nums text-slate-900">{formatInt(xpTotal)}</p>
+          <p className="text-xs font-medium text-ink-muted">XP total</p>
+          <p className="mt-1 font-display text-4xl leading-tight font-extrabold tabular-nums text-ink">
+            <span className="highlight-mark">{formatInt(xpTotal)}</span>
+          </p>
         </div>
-        <p className="text-sm text-slate-600">
-          <span className="font-semibold tabular-nums text-slate-800">{formatInt(xpInPeriod)}</span>{' '}
+        <p className="text-sm text-ink-muted">
+          <span className="font-semibold tabular-nums text-ink">{formatInt(xpInPeriod)}</span>{' '}
           nesta semana
         </p>
       </div>

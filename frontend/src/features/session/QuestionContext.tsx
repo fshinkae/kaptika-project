@@ -11,11 +11,11 @@ const COMPONENTS: Components = {
   img: ({ src, alt }) =>
     typeof src === 'string' ? <ZoomableImage src={src} alt={alt || 'Imagem da questão'} /> : null,
   p: ({ children }) => <p className="whitespace-pre-line">{children}</p>,
-  strong: ({ children }) => <strong className="font-semibold text-slate-800">{children}</strong>,
+  strong: ({ children }) => <strong className="font-semibold text-ink">{children}</strong>,
   a: ({ children }) => <span>{children}</span>,
-  h1: ({ children }) => <p className="font-semibold text-slate-800">{children}</p>,
-  h2: ({ children }) => <p className="font-semibold text-slate-800">{children}</p>,
-  h3: ({ children }) => <p className="font-semibold text-slate-800">{children}</p>,
+  h1: ({ children }) => <p className="font-semibold text-ink">{children}</p>,
+  h2: ({ children }) => <p className="font-semibold text-ink">{children}</p>,
+  h3: ({ children }) => <p className="font-semibold text-ink">{children}</p>,
 }
 
 /**
@@ -26,7 +26,7 @@ const COMPONENTS: Components = {
  */
 export function QuestionContext({ markdown }: { markdown: string }) {
   return (
-    <div className="flex flex-col gap-3 text-sm leading-relaxed text-slate-600">
+    <div className="flex flex-col gap-3 text-sm leading-relaxed text-ink-muted">
       <Markdown components={COMPONENTS}>{markdown}</Markdown>
     </div>
   )

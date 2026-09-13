@@ -28,8 +28,8 @@ export function AreaSelect({
   return (
     <main className="mx-auto flex w-full max-w-md flex-col gap-6 px-5 py-8">
       <header className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold text-slate-800">Escolha uma área</h1>
-        <p className="text-slate-600">Responda uma sessão curta e ganhe XP.</p>
+        <h1 className="text-2xl font-bold text-ink">Escolha uma área</h1>
+        <p className="text-ink-muted">Responda uma sessão curta e ganhe XP.</p>
       </header>
 
       <ul className="flex flex-col gap-3">
@@ -43,7 +43,7 @@ export function AreaSelect({
       </ul>
 
       {error != null && (
-        <p role="alert" className="text-sm text-red-700">
+        <p role="alert" className="text-sm text-danger">
           {startErrorMessage(error)}
         </p>
       )}
@@ -67,20 +67,20 @@ function SessionStarting({ areaLabel }: { areaLabel: string }) {
   return (
     <main aria-busy="true" className="mx-auto flex w-full max-w-md flex-col gap-6 px-5 py-8">
       <div role="status" aria-live="polite" className="flex flex-col gap-1">
-        <p className="text-lg font-semibold text-slate-800">Separando questões de {areaLabel}…</p>
-        <p className="min-h-5 text-sm text-slate-600">
+        <p className="text-lg font-semibold text-ink">Separando questões de {areaLabel}…</p>
+        <p className="min-h-5 text-sm text-ink-muted">
           {slow ? 'Buscando na base do ENEM. Leva alguns segundos.' : ''}
         </p>
       </div>
 
       <div aria-hidden className="flex flex-col gap-3 motion-safe:animate-pulse">
-        <div className="h-2 w-full rounded-full bg-slate-200" />
-        <div className="mt-4 h-4 w-full rounded bg-slate-200" />
-        <div className="h-4 w-11/12 rounded bg-slate-200" />
-        <div className="h-4 w-4/5 rounded bg-slate-200" />
-        <div className="mt-2 h-5 w-3/4 rounded bg-slate-300/70" />
+        <div className="h-2 w-full rounded-full bg-line" />
+        <div className="mt-4 h-4 w-full rounded bg-line" />
+        <div className="h-4 w-11/12 rounded bg-line" />
+        <div className="h-4 w-4/5 rounded bg-line" />
+        <div className="mt-2 h-5 w-3/4 rounded bg-line/70" />
         {[0, 1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-14 rounded-xl bg-white ring-1 ring-slate-200" />
+          <div key={i} className="h-14 rounded-control bg-surface ring-1 ring-line" />
         ))}
       </div>
     </main>

@@ -3,9 +3,17 @@ import type { ButtonHTMLAttributes } from 'react'
 type Variant = 'primary' | 'secondary'
 
 const styles: Record<Variant, string> = {
+  // Primário "carimbado": borda inferior sólida que afunda ao tocar.
   primary:
-    'bg-indigo-600 text-white shadow-sm shadow-indigo-600/25 hover:bg-indigo-700 disabled:bg-indigo-300 disabled:shadow-none',
-  secondary: 'bg-white text-indigo-700 ring-1 ring-indigo-200 hover:bg-indigo-50',
+    'bg-pen-600 text-white shadow-stamp hover:bg-pen-700 active:translate-y-[2px] active:shadow-none disabled:bg-pen-300 disabled:shadow-none disabled:active:translate-y-0',
+  secondary: 'bg-surface text-pen-700 ring-1 ring-line hover:bg-pen-50 hover:ring-pen-200',
+}
+
+type Size = 'md' | 'lg'
+
+const sizes: Record<Size, string> = {
+  md: 'min-h-[44px] rounded-control text-base',
+  lg: 'min-h-14 rounded-card text-lg',
 }
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -13,11 +21,14 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 /** Classes do botão, para links que precisam parecer botão (ex.: navegação). */
-export function buttonClassName(variant: Variant = 'primary', className = ''): string {
-  return `inline-flex min-h-[44px] w-full items-center justify-center rounded-xl px-4 text-base font-semibold
-    transition duration-200 hover:-translate-y-px active:translate-y-0 active:scale-[0.98]
-    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600
-    disabled:cursor-not-allowed disabled:hover:translate-y-0 ${styles[variant]} ${className}`
+export function buttonClassName(
+  variant: Variant = 'primary',
+  className = '',
+  size: Size = 'md',
+): string {
+  return `inline-flex w-full items-center justify-center px-4 font-semibold transition duration-150
+    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pen-600
+    disabled:cursor-not-allowed ${sizes[size]} ${styles[variant]} ${className}`
 }
 
 /** Botão mobile-first: alvo de toque ≥44px, foco visível (FR-011). */

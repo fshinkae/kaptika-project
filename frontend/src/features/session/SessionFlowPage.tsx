@@ -184,8 +184,8 @@ function AreaConflict({
   return (
     <main className="mx-auto flex w-full max-w-md flex-col gap-6 px-5 py-8">
       <header className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold text-slate-800">Você tem uma sessão em andamento</h1>
-        <p className="text-slate-600">
+        <h1 className="text-2xl font-bold text-ink">Você tem uma sessão em andamento</h1>
+        <p className="text-ink-muted">
           Ela é de <strong>{activeLabel}</strong> ({active.answeredCount} de {active.totalQuestions}{' '}
           respondidas). Só é possível ter uma sessão por vez.
         </p>
@@ -201,7 +201,7 @@ function AreaConflict({
       </div>
 
       {error != null && (
-        <p role="alert" className="text-sm text-red-700">
+        <p role="alert" className="text-sm text-danger">
           Não foi possível trocar de área. Tente novamente.
         </p>
       )}
@@ -274,9 +274,9 @@ function ActiveSession({
           onClick={() => navigate('/')}
           aria-label="Sair da sessão"
           title="Sair (o progresso fica salvo)"
-          className="-ml-3 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-slate-600
-            transition hover:bg-slate-100
-            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          className="-ml-3 flex h-11 w-11 shrink-0 items-center justify-center rounded-control text-ink-muted
+            transition hover:bg-paper
+            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pen-600"
         >
           <CloseIcon className="h-6 w-6" />
         </button>
@@ -312,7 +312,7 @@ function ActiveSession({
             }
           />
           {answerMutation.isError && !feedback && (
-            <p role="alert" className="text-sm text-red-700">
+            <p role="alert" className="text-sm text-danger">
               {answerErrorMessage(answerMutation.error)}
             </p>
           )}
@@ -338,7 +338,7 @@ function ActiveSession({
       />
 
       {finishMutation.isError && (
-        <p role="alert" className="text-sm text-red-700">
+        <p role="alert" className="text-sm text-danger">
           Não foi possível encerrar a sessão. Tente novamente.
         </p>
       )}

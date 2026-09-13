@@ -34,7 +34,7 @@ export function LeaderboardPage() {
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-col gap-4 px-5 py-8">
-      <h1 className="text-xl font-semibold text-slate-800">Placar de líderes</h1>
+      <h1 className="text-2xl font-bold text-ink">Placar de líderes</h1>
 
       <ScopeTabs scope={scope} onChange={setScope} />
 
@@ -63,7 +63,7 @@ export function LeaderboardPage() {
               </ol>
 
               {isFetchNextPageError && (
-                <p role="alert" className="text-center text-sm text-red-700">
+                <p role="alert" className="text-center text-sm text-danger">
                   Não foi possível carregar mais itens.
                 </p>
               )}

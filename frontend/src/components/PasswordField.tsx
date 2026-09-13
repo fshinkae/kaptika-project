@@ -17,8 +17,8 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>((p
           onClick={() => setVisible((v) => !v)}
           aria-label="Mostrar senha"
           aria-pressed={visible}
-          className="h-11 rounded-xl px-3 text-sm font-semibold text-indigo-700 hover:bg-indigo-50
-            focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-indigo-600"
+          className="h-11 rounded-control px-3 text-sm font-semibold text-pen-700 hover:bg-pen-50
+            focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-pen-600"
         >
           {visible ? 'Ocultar' : 'Mostrar'}
         </button>

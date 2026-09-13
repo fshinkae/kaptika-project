@@ -9,7 +9,7 @@ export function Avatar({ src, name }: { src: string | null; name: string }) {
     return (
       <div
         aria-label={name}
-        className="flex h-20 w-20 items-center justify-center rounded-full bg-indigo-100 text-2xl font-semibold text-indigo-700"
+        className="flex h-20 w-20 items-center justify-center rounded-full bg-pen-100 text-2xl font-semibold text-pen-700"
       >
         {initials}
       </div>
