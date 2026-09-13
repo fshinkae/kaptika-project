@@ -28,21 +28,20 @@ export function QuestionCard({
 }) {
   const [selected, setSelected] = useState<string | null>(null)
   const answered = feedback !== null
-  const sectionRef = useRef<HTMLElement>(null)
   const headingRef = useRef<HTMLHeadingElement>(null)
 
   // Cada questão monta de novo (key no pai). Ela abre no topo e o foco vai ao
   // enunciado (SES-3): antes, a próxima questão aparecia rolada até as
   // alternativas e o foco se perdia com o botão "Próxima" desmontado.
   useEffect(() => {
-    if ((sectionRef.current?.getBoundingClientRect().top ?? 0) < 0) {
-      window.scrollTo({ top: 0 })
-    }
+    // Sempre ao topo e sem animação: com as imagens ainda carregando, a página
+    // encurta e o navegador prende a rolagem no meio da questão nova.
+    if (window.scrollY > 0) window.scrollTo({ top: 0, behavior: 'instant' })
     headingRef.current?.focus({ preventScroll: true })
   }, [])
 
   return (
-    <section ref={sectionRef} className="flex flex-col gap-5" aria-labelledby="question-statement">
+    <section className="flex flex-col gap-5" aria-labelledby="question-statement">
       {question.context && <QuestionContext markdown={question.context} />}
 
       <h2
