@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { ErrorState } from '../../components/ErrorState'
-import { FlameIcon } from '../../components/Icons'
+import { CheckIcon, FlameIcon } from '../../components/Icons'
 import { Skeleton } from '../../components/Skeleton'
 import { formatDays } from '../../lib/format'
 import { getStreak, type StreakState } from './streakApi'
@@ -37,7 +37,7 @@ function StreakView({ streak }: { streak: StreakState }) {
 
   return (
     <section aria-labelledby="streak-heading" className="flex flex-col gap-5">
-      <h2 id="streak-heading" className="text-lg font-semibold text-slate-800">
+      <h2 id="streak-heading" className="font-display text-lg font-bold text-ink">
         Ofensiva diária
       </h2>
 
@@ -53,7 +53,7 @@ function StreakView({ streak }: { streak: StreakState }) {
             <Stat label="Recorde" value={formatDays(record)} />
             <Stat label="Proteções" value={freezes} />
           </dl>
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-ink-muted">
             Se você passar um dia sem estudar, uma proteção é usada automaticamente.
           </p>
         </div>
@@ -66,15 +66,17 @@ function StreakView({ streak }: { streak: StreakState }) {
 function StreakHero({ current, metToday }: { current: number; metToday: boolean }) {
   const label = current === 1 ? 'dia seguido' : 'dias seguidos'
   return (
-    <div className="flex flex-col items-center gap-1 rounded-2xl bg-gradient-to-b from-amber-50 to-white p-6 text-center ring-1 ring-amber-100">
-      <span aria-hidden className="text-4xl">
-        🔥
+    <div className="flex items-center gap-4 rounded-card bg-surface p-5 ring-1 ring-line">
+      <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-highlight">
+        <FlameIcon className="h-7 w-7 text-ink" />
       </span>
-      <span className="text-5xl font-bold tabular-nums text-amber-600">{current}</span>
-      <span className="text-sm font-medium text-slate-600">{label}</span>
-      {metToday && current > 0 && (
-        <span className="mt-1 text-xs text-slate-600">Ofensiva mantida hoje!</span>
-      )}
+      <div className="flex flex-col">
+        <span className="font-display text-4xl leading-none font-extrabold tabular-nums text-ink">
+          {current}
+        </span>
+        <span className="mt-1 text-sm font-medium text-ink-muted">{label}</span>
+      </div>
+      {metToday && current > 0 && <span className="sr-only">Ofensiva mantida hoje.</span>}
     </div>
   )
 }
@@ -84,9 +86,9 @@ function MetTodayBadge() {
   return (
     <p
       role="status"
-      className="flex items-center justify-center gap-2 rounded-xl bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700 ring-1 ring-emerald-100"
+      className="flex items-center justify-center gap-2 rounded-control bg-success-soft px-4 py-2.5 text-sm font-semibold text-success"
     >
-      <span aria-hidden>✅</span>
+      <CheckIcon className="h-4 w-4" />
       Meta cumprida hoje
     </p>
   )
@@ -95,11 +97,13 @@ function MetTodayBadge() {
 /** Estado inicial quando ainda não há ofensiva (não é erro): uma linha, sem ocupar a tela. */
 function InitialInvite() {
   return (
-    <div className="flex items-start gap-3 rounded-2xl bg-white p-5 ring-1 ring-slate-100">
-      <FlameIcon className="h-6 w-6 shrink-0 text-amber-600" />
+    <div className="flex items-start gap-3 rounded-card bg-surface p-5 ring-1 ring-line">
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-highlight-soft">
+        <FlameIcon className="h-5 w-5 text-ink" />
+      </span>
       <div>
-        <p className="text-base font-semibold text-slate-800">Comece sua ofensiva hoje!</p>
-        <p className="mt-1 text-sm text-slate-600">
+        <p className="text-base font-semibold text-ink">Comece sua ofensiva hoje!</p>
+        <p className="mt-1 text-sm text-ink-muted">
           Conclua uma sessão por dia para a sequência crescer.
         </p>
       </div>
@@ -116,22 +120,22 @@ function BreakBanner({ brokenAt }: { brokenAt: string | null }) {
     <div
       role="status"
       aria-live="polite"
-      className="flex flex-col gap-1 rounded-xl bg-sky-50 p-4 text-center ring-1 ring-sky-100"
+      className="flex flex-col gap-1 rounded-control bg-pen-50 p-4 text-center ring-1 ring-pen-100"
     >
-      <p className="text-sm font-semibold text-slate-800">Sua ofensiva foi reiniciada</p>
-      <p className="text-sm text-slate-600">
+      <p className="text-sm font-semibold text-ink">Sua ofensiva foi reiniciada</p>
+      <p className="text-sm text-ink-muted">
         Tudo bem — recomeços fazem parte. Que tal retomar hoje?
       </p>
-      {brokenAt && <p className="text-xs text-slate-600">Última sequência até {formatDate(brokenAt)}.</p>}
+      {brokenAt && <p className="text-xs text-ink-muted">Última sequência até {formatDate(brokenAt)}.</p>}
     </div>
   )
 }
 
 function Stat({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="rounded-xl bg-white p-4 text-center ring-1 ring-slate-100">
-      <dt className="text-xs font-medium text-slate-600">{label}</dt>
-      <dd className="mt-1 text-lg font-semibold text-slate-800">{value}</dd>
+    <div className="rounded-control bg-surface p-4 text-center ring-1 ring-line">
+      <dt className="text-xs font-medium text-ink-muted">{label}</dt>
+      <dd className="mt-1 font-display text-xl font-bold text-ink">{value}</dd>
     </div>
   )
 }

@@ -25,13 +25,13 @@ export function SessionSummaryView({
   return (
     <main className="mx-auto flex w-full max-w-md flex-col gap-5 px-5 py-8">
       <header className="text-center">
-        <p className="text-sm font-medium text-slate-600">{areaLabel}</p>
-        <h1 className="mt-1 text-2xl font-bold text-slate-900">Sessão concluída</h1>
+        <p className="text-sm font-medium text-ink-muted">{areaLabel}</p>
+        <h1 className="mt-1 text-2xl font-bold text-ink">Sessão concluída</h1>
       </header>
 
       <dl className="grid grid-cols-3 gap-3">
-        <Stat label="Acertos" value={summary.correctCount} tone="text-green-700" />
-        <Stat label="Erros" value={summary.wrongCount} tone="text-red-700" />
+        <Stat label="Acertos" value={summary.correctCount} tone="text-success" />
+        <Stat label="Erros" value={summary.wrongCount} tone="text-danger" />
         <Stat label="Feitas" value={`${summary.answeredCount}/${summary.totalQuestions}`} />
       </dl>
 
@@ -75,21 +75,23 @@ function SessionProgressReport() {
   return (
     <section
       aria-labelledby="session-progress-heading"
-      className="flex flex-col gap-4 rounded-2xl bg-white p-5 ring-1 ring-slate-200"
+      className="flex flex-col gap-4 rounded-card bg-surface p-5 ring-1 ring-line"
     >
       <div className="flex items-baseline justify-between gap-3">
-        <h2 id="session-progress-heading" className="text-base font-semibold text-slate-800">
+        <h2 id="session-progress-heading" className="font-display text-base font-bold text-ink">
           Seu progresso
         </h2>
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-ink-muted">
           {xpTotal > 0 ? `${formatInt(xpTotal)} XP no total` : 'Cada acerto soma XP'}
         </p>
       </div>
       <LevelMeter level={level} xpToNextLevel={xpToNextLevel} />
-      <p className="flex items-start gap-2 text-sm text-slate-700">
-        <FlameIcon className="h-5 w-5 shrink-0 text-amber-600" />
+      <p className="flex items-center gap-2.5 text-sm text-ink">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-highlight">
+          <FlameIcon className="h-4 w-4 text-ink" />
+        </span>
         <span>
-          <strong className="font-semibold text-slate-900">Ofensiva: {formatDays(current)}.</strong>{' '}
+          <strong className="font-semibold text-ink">Ofensiva: {formatDays(current)}.</strong>{' '}
           {metToday ? 'Volte amanhã para manter.' : ''}
         </span>
       </p>
@@ -100,16 +102,16 @@ function SessionProgressReport() {
 function Stat({
   label,
   value,
-  tone = 'text-slate-800',
+  tone = 'text-ink',
 }: {
   label: string
   value: string | number
   tone?: string
 }) {
   return (
-    <div className="rounded-xl bg-white p-4 text-center ring-1 ring-slate-200">
-      <dt className="text-xs font-medium text-slate-600">{label}</dt>
-      <dd className={`mt-1 text-lg font-semibold tabular-nums ${tone}`}>{value}</dd>
+    <div className="rounded-control bg-surface p-4 text-center ring-1 ring-line">
+      <dt className="text-xs font-medium text-ink-muted">{label}</dt>
+      <dd className={`mt-1 font-display text-2xl font-bold tabular-nums ${tone}`}>{value}</dd>
     </div>
   )
 }

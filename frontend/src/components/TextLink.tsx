@@ -4,9 +4,9 @@ import { Link, type LinkProps } from 'react-router-dom'
 export function TextLink({ className = '', ...props }: LinkProps) {
   return (
     <Link
-      className={`inline-flex min-h-11 items-center rounded-lg px-2 font-medium text-indigo-600
+      className={`inline-flex min-h-11 items-center rounded-lg px-2 font-medium text-pen-600
         underline-offset-2 hover:underline
-        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ${className}`}
+        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pen-600 ${className}`}
       {...props}
     />
   )

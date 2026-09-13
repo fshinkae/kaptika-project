@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { EmptyState } from '../../components/EmptyState'
 import { ErrorState } from '../../components/ErrorState'
+import { MedalIcon } from '../../components/Icons'
 import { LoadingState } from '../../components/LoadingState'
 import { getBadges } from './badgesApi'
 
@@ -21,10 +22,10 @@ export function ProfileBadgesHighlight({ limit = 3 }: { limit?: number }) {
   return (
     <section aria-labelledby="profile-badges-heading" className="w-full">
       <div className="mb-3 flex items-baseline justify-between">
-        <h2 id="profile-badges-heading" className="text-base font-semibold text-slate-800">
+        <h2 id="profile-badges-heading" className="font-display text-base font-bold text-ink">
           Medalhas
         </h2>
-        <span className="text-sm text-slate-600">
+        <span className="text-sm text-ink-muted">
           {query.data.achievedCount} de {query.data.totalCount}
         </span>
       </div>
@@ -39,14 +40,14 @@ export function ProfileBadgesHighlight({ limit = 3 }: { limit?: number }) {
             <li
               key={badge.slug}
               title={badge.name}
-              className="flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1.5 text-sm font-medium text-indigo-700 ring-1 ring-indigo-100"
+              className="flex items-center gap-2 rounded-full bg-pen-50 px-3 py-1.5 text-sm font-medium text-pen-700 ring-1 ring-pen-100"
             >
-              <span aria-hidden>🏅</span>
+              <MedalIcon className="h-4 w-4" />
               <span>{badge.name}</span>
             </li>
           ))}
           {achieved.length > limit && (
-            <li className="flex items-center rounded-full bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-600">
+            <li className="flex items-center rounded-full bg-paper px-3 py-1.5 text-sm font-medium text-ink-muted">
               +{achieved.length - limit}
             </li>
           )}

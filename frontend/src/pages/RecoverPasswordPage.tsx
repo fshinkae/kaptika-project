@@ -36,7 +36,7 @@ export function RecoverPasswordPage() {
       }
     >
       {sent ? (
-        <p role="status" className="text-center text-sm text-slate-600">
+        <p role="status" className="text-center text-sm text-ink-muted">
           Se houver uma conta com esse e-mail, enviamos um link para redefinir a senha.
         </p>
       ) : (

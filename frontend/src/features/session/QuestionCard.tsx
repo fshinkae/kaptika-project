@@ -48,7 +48,7 @@ export function QuestionCard({
         id="question-statement"
         ref={headingRef}
         tabIndex={-1}
-        className="whitespace-pre-wrap text-base font-semibold leading-relaxed text-slate-800 focus:outline-none"
+        className="whitespace-pre-wrap text-base font-semibold leading-relaxed text-ink focus:outline-none"
       >
         {question.statement}
       </h2>
@@ -60,8 +60,8 @@ export function QuestionCard({
           return (
             <label
               key={alt.letter}
-              className={`flex min-h-[44px] cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 text-sm transition
-                has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-indigo-600
+              className={`flex min-h-[44px] cursor-pointer items-center gap-3 rounded-control border px-4 py-3 text-sm transition
+                has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-pen-600
                 ${labelStyles(state)}`}
             >
               <input
@@ -75,12 +75,13 @@ export function QuestionCard({
               />
               <span
                 aria-hidden
-                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${badgeStyles(state)}`}
+                // Bolinha do cartão-resposta: preenchida ao marcar.
+                className={`flex h-7 w-9 shrink-0 items-center justify-center rounded-[50%] border-2 text-xs font-bold ${badgeStyles(state)}`}
               >
                 {alt.letter}
               </span>
               <span className="flex min-w-0 flex-1 flex-col gap-2">
-                {alt.text && <span className="text-slate-800">{alt.text}</span>}
+                {alt.text && <span className="text-ink">{alt.text}</span>}
                 {alt.file && (
                   // Tocar a imagem a amplia; escolher se faz tocando o cartão
                   // ao redor ou pelo botão dentro da tela cheia.
@@ -96,8 +97,8 @@ export function QuestionCard({
                   />
                 )}
               </span>
-              {state === 'correct' && <CheckIcon className="h-5 w-5 shrink-0 text-green-700" />}
-              {state === 'wrong' && <CloseIcon className="h-5 w-5 shrink-0 text-red-700" />}
+              {state === 'correct' && <CheckIcon className="h-5 w-5 shrink-0 text-success" />}
+              {state === 'wrong' && <CloseIcon className="h-5 w-5 shrink-0 text-danger" />}
             </label>
           )
         })}
@@ -108,10 +109,15 @@ export function QuestionCard({
           <p
             role="status"
             aria-live="polite"
-            className={`text-sm font-semibold ${feedback.correct ? 'text-green-700' : 'text-red-700'}`}
+            className={`flex items-center gap-2 text-sm font-semibold ${feedback.correct ? 'text-success' : 'text-danger'}`}
           >
+            {feedback.correct ? (
+              <CheckIcon className="h-5 w-5 shrink-0" />
+            ) : (
+              <CloseIcon className="h-5 w-5 shrink-0" />
+            )}
             {feedback.correct
-              ? 'Você acertou! 🎉'
+              ? 'Você acertou!'
               : `Resposta incorreta. A correta é a alternativa ${feedback.correctAlternative}.`}
           </p>
           <Button onClick={onNext}>{nextLabel}</Button>
@@ -162,25 +168,25 @@ function alternativeState(
 function labelStyles(state: AltState): string {
   switch (state) {
     case 'selected':
-      return 'border-indigo-500 bg-indigo-50'
+      return 'border-pen-600 bg-pen-50'
     case 'correct':
-      return 'border-green-500 bg-green-50'
+      return 'border-success bg-success-soft'
     case 'wrong':
-      return 'border-red-500 bg-red-50'
+      return 'border-danger bg-danger-soft'
     default:
-      return 'border-slate-200 bg-white'
+      return 'border-line bg-surface'
   }
 }
 
 function badgeStyles(state: AltState): string {
   switch (state) {
     case 'selected':
-      return 'bg-indigo-600 text-white'
+      return 'border-pen-600 bg-pen-600 text-white'
     case 'correct':
-      return 'bg-green-600 text-white'
+      return 'border-success bg-success text-white'
     case 'wrong':
-      return 'bg-red-600 text-white'
+      return 'border-danger bg-surface text-danger'
     default:
-      return 'bg-slate-100 text-slate-600'
+      return 'border-line-strong bg-surface text-ink-muted'
   }
 }

@@ -20,7 +20,7 @@ export const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
     const hintId = hint && !error ? `${fieldId}-hint` : undefined
     return (
       <div className="flex flex-col gap-1">
-        <label htmlFor={fieldId} className="text-sm font-medium text-slate-700">
+        <label htmlFor={fieldId} className="text-sm font-medium text-ink">
           {label}
         </label>
         <div className="relative">
@@ -29,20 +29,20 @@ export const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
             ref={ref}
             aria-invalid={error ? true : undefined}
             aria-describedby={errorId ?? hintId}
-            className={`min-h-[44px] w-full rounded-xl border border-slate-500/80 bg-white px-3 text-base
-              focus-visible:border-indigo-500 focus-visible:outline-2 focus-visible:outline-indigo-500
-              aria-[invalid=true]:border-red-500 ${action ? 'pr-24' : ''}`}
+            className={`min-h-[44px] w-full rounded-control border border-line-strong bg-surface px-3 text-base
+              focus-visible:border-pen-600 focus-visible:outline-2 focus-visible:outline-pen-600
+              aria-[invalid=true]:border-danger ${action ? 'pr-24' : ''}`}
             {...props}
           />
           {action && <div className="absolute inset-y-0 right-0 flex items-center">{action}</div>}
         </div>
         {hintId && (
-          <p id={hintId} className="text-sm text-slate-600">
+          <p id={hintId} className="text-sm text-ink-muted">
             {hint}
           </p>
         )}
         {error && (
-          <p id={errorId} role="alert" className="text-sm text-red-700">
+          <p id={errorId} role="alert" className="text-sm text-danger">
             {error}
           </p>
         )}

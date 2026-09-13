@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { Logo } from './Logo'
 
 /** Moldura mobile-first das telas de autenticação. */
 export function AuthLayout({
@@ -16,14 +17,18 @@ export function AuthLayout({
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col justify-center gap-6 px-5 py-10">
       <header className="text-center">
-        <Link to="/" className="text-2xl font-bold text-indigo-600">
-          Kaptika
+        <Link
+          to="/"
+          aria-label="Kaptika"
+          className="inline-flex rounded-control focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-pen-600"
+        >
+          <Logo />
         </Link>
-        <h1 className="mt-4 text-xl font-semibold text-slate-800">{title}</h1>
-        {subtitle && <p className="mt-2 text-base text-slate-600">{subtitle}</p>}
+        <h1 className="mt-6 text-2xl font-bold text-ink">{title}</h1>
+        {subtitle && <p className="mt-2 text-base text-ink-muted">{subtitle}</p>}
       </header>
       {children}
-      {footer && <div className="text-center text-sm text-slate-600">{footer}</div>}
+      {footer && <div className="text-center text-sm text-ink-muted">{footer}</div>}
     </main>
   )
 }

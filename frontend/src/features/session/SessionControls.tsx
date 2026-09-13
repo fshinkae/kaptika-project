@@ -70,7 +70,7 @@ export function SessionControls({
 }) {
   return (
     <div className="-my-2 flex items-center justify-between gap-3">
-      <p className="flex items-center gap-1.5 text-sm text-slate-600">
+      <p className="flex items-center gap-1.5 text-sm text-ink-muted">
         <ClockIcon className="h-4 w-4" />
         <span role="timer" aria-label="Tempo de estudo" className="tabular-nums">
           {elapsed}
@@ -80,9 +80,9 @@ export function SessionControls({
         type="button"
         onClick={paused ? onResume : onPause}
         disabled={disabled}
-        className="-mr-3 min-h-[44px] rounded-xl px-3 text-sm font-semibold text-indigo-700
-          transition duration-200 hover:bg-indigo-50 disabled:cursor-not-allowed disabled:text-slate-400
-          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        className="-mr-3 min-h-[44px] rounded-control px-3 text-sm font-semibold text-pen-700
+          transition duration-200 hover:bg-pen-50 disabled:cursor-not-allowed disabled:text-ink-subtle
+          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pen-600"
       >
         {paused ? 'Retomar' : 'Pausar'}
       </button>
@@ -93,9 +93,9 @@ export function SessionControls({
 /** Tela de pausa: esconde a questão para a pausa valer de fato. */
 export function PausedPanel({ onResume }: { onResume: () => void }) {
   return (
-    <section className="flex flex-col gap-4 rounded-2xl bg-slate-50 p-6 text-center ring-1 ring-slate-100">
-      <h2 className="text-lg font-bold text-slate-800">Sessão pausada</h2>
-      <p className="text-sm text-slate-600">
+    <section className="flex flex-col gap-4 rounded-card bg-surface p-6 text-center ring-1 ring-line">
+      <h2 className="font-display text-xl font-bold text-ink">Sessão pausada</h2>
+      <p className="text-sm text-ink-muted">
         O cronômetro está parado e a questão fica oculta até você retomar.
       </p>
       <Button onClick={onResume}>Retomar sessão</Button>
@@ -122,16 +122,16 @@ export function FinishControls({
       <button
         type="button"
         onClick={onAsk}
-        className="min-h-[44px] text-sm font-medium text-slate-600 underline-offset-2 hover:underline
-          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        className="min-h-[44px] text-sm font-medium text-ink-muted underline-offset-2 hover:underline
+          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pen-600"
       >
         Encerrar sessão
       </button>
     )
   }
   return (
-    <div className="flex flex-col gap-3 rounded-xl bg-slate-50 p-4 ring-1 ring-slate-100">
-      <p className="text-sm text-slate-700">
+    <div className="flex flex-col gap-3 rounded-control bg-surface p-4 ring-1 ring-line">
+      <p className="text-sm text-ink">
         Encerrar agora? Você verá o resumo do que já respondeu.
       </p>
       <div className="flex gap-3">

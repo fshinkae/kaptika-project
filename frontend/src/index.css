@@ -1,21 +1,58 @@
 @import 'tailwindcss';
 
-/* Outfit é carregada por <link> no index.html: um @import aqui viria depois
-   das regras expandidas pelo Tailwind e o build o descartaria. */
+/* Bricolage Grotesque e Figtree são carregadas por <link> no index.html: um
+   @import aqui viria depois das regras expandidas pelo Tailwind e o build o
+   descartaria. */
 
+/*
+ * Identidade "Cartão-resposta": papel, tinta, caneta azul e marca-texto — o
+ * ritual da prova do ENEM. Contrastes medidos (WCAG AA) anotados nos tokens.
+ */
 @theme {
-  --font-sans:
-    'Outfit', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Figtree', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Bricolage Grotesque', 'Figtree', system-ui, sans-serif;
 
-  /* Marca Kaptika: íris quente e dessaturada no lugar do indigo padrão. Uma
-     só cor de destaque; todos os utilitários indigo-* herdam este tom. */
-  --color-indigo-50: #f5f4fc;
-  --color-indigo-100: #eae7f9;
-  --color-indigo-200: #d5cff2;
-  --color-indigo-300: #b3a6e6;
-  --color-indigo-500: #7d63d8;
-  --color-indigo-600: #6a4fc4;
-  --color-indigo-700: #563da4;
+  --color-paper: #f7f4ec;
+  --color-surface: #ffffff;
+  --color-ink: #1c1b18; /* 16:1 no papel */
+  --color-ink-muted: #57534a; /* 7:1 no papel */
+  --color-ink-subtle: #8a8270; /* só ícones e traços decorativos (3,8:1) */
+  --color-line: #e3ddcf;
+  --color-line-strong: #8a8270; /* borda de campo: 3,8:1 no branco */
+
+  --color-pen-50: #eef1fc;
+  --color-pen-100: #e0e6fa;
+  --color-pen-200: #c3cdf4;
+  --color-pen-300: #9aaae8;
+  --color-pen-600: #2340b8; /* caneta: 8,4:1 com branco, 7,6:1 no papel */
+  --color-pen-700: #1b329a;
+  --color-pen-800: #172c85;
+
+  --color-highlight: #ffe14d; /* marca-texto: só fundo, com tinta por cima (13:1) */
+  --color-highlight-soft: #fff4bf;
+
+  --color-success: #1d7a45; /* 4,7:1 no fundo suave */
+  --color-success-soft: #e6f3ea;
+  --color-danger: #c22e2e; /* 4,8:1 no fundo suave */
+  --color-danger-soft: #fbeae7;
+
+  --radius-card: 14px;
+  --radius-control: 12px;
+
+  /* Sombra "carimbo": borda inferior sólida, sem desfoque. */
+  --shadow-stamp: 0 2px 0 var(--color-pen-800);
+}
+
+/* Traço de marca-texto atrás do texto (números de destaque e logotipo). */
+@utility highlight-mark {
+  background-image: linear-gradient(
+    transparent 58%,
+    var(--color-highlight) 58%,
+    var(--color-highlight) 94%,
+    transparent 94%
+  );
+  box-decoration-break: clone;
+  padding-inline: 0.06em;
 }
 
 :root {
@@ -29,21 +66,17 @@ html {
 body {
   margin: 0;
   font-family: var(--font-sans);
-  /* Fundo levemente aquecido na direção da marca + brilho ambiente sutil no
-     topo, para as telas não ficarem chapadas. */
-  background-color: #f7f6fb;
-  background-image: radial-gradient(
-    120% 60% at 50% -10%,
-    #efeafb 0%,
-    transparent 60%
-  );
-  background-attachment: fixed;
-  color: #0f172a;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-/* Títulos respiram melhor sem palavra órfã e com tracking apertado. */
+/* Títulos de página na fonte de display, sem palavra órfã. */
+h1 {
+  font-family: var(--font-display);
+}
+
 h1,
 h2 {
   text-wrap: balance;

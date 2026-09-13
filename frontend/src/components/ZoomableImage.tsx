@@ -31,7 +31,7 @@ export function ZoomableImage({
 
   if (!src || src.includes(MISSING_IMAGE) || failed) {
     return (
-      <span className="block rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600 ring-1 ring-slate-200">
+      <span className="block rounded-lg bg-paper px-3 py-2 text-xs text-ink-muted ring-1 ring-line">
         Imagem indisponível na fonte.
       </span>
     )
@@ -50,7 +50,7 @@ export function ZoomableImage({
         }}
         aria-label={`Ampliar imagem: ${alt}`}
         className={`block w-fit max-w-full cursor-zoom-in rounded-lg bg-white p-1
-          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600
+          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pen-600
           ${className}`}
       >
         {/* As digitalizações da enem.dev variam muito de tamanho: exibir no
@@ -216,7 +216,7 @@ function ImageViewer({
       role="dialog"
       aria-modal="true"
       aria-label={`Imagem ampliada: ${alt}`}
-      className="fixed inset-0 z-50 flex flex-col bg-slate-900/95"
+      className="fixed inset-0 z-50 flex flex-col bg-ink/95"
     >
       {/* No celular a pinça basta; no computador não há pinça, então os
           controles de zoom precisam estar visíveis (e no teclado). */}
@@ -289,7 +289,7 @@ function ImageViewer({
               onSelect()
               onClose()
             }}
-            className="min-h-[44px] w-full rounded-xl bg-white px-4 text-base font-semibold text-slate-900
+            className="min-h-[44px] w-full rounded-control bg-white px-4 text-base font-semibold text-ink
               focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
             {selectLabel}
@@ -305,7 +305,7 @@ function ImageViewer({
 }
 
 const CONTROL_CLASS =
-  'min-h-[44px] min-w-[44px] rounded-xl px-3 text-base font-semibold text-white ring-1 ring-white/30 ' +
+  'min-h-[44px] min-w-[44px] rounded-control px-3 text-base font-semibold text-white ring-1 ring-white/30 ' +
   'hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'
 
 function clamp(value: number, min: number, max: number): number {

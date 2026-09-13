@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import type { BadgeView } from './badgesApi'
 import { Button } from '../../components/Button'
+import { MedalIcon } from '../../components/Icons'
 
 /**
  * Overlay de celebração de uma medalha recém-conquistada (FR-001). Acessível
@@ -30,7 +31,7 @@ export function BadgeCelebration({ badge, onDismiss }: { badge: BadgeView; onDis
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-6"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 px-6"
       onClick={onDismiss}
     >
       <div
@@ -39,22 +40,22 @@ export function BadgeCelebration({ badge, onDismiss }: { badge: BadgeView; onDis
         role="dialog"
         aria-modal="true"
         aria-labelledby="badge-celebration-title"
-        className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-xl outline-none"
+        className="w-full max-w-sm rounded-card bg-surface p-6 text-center shadow-xl outline-none"
         onClick={(e) => e.stopPropagation()}
       >
-        <p aria-live="assertive" className="text-sm font-medium uppercase tracking-wide text-indigo-600">
+        <p aria-live="assertive" className="text-sm font-medium uppercase tracking-wide text-pen-600">
           Nova medalha!
         </p>
         <div
           aria-hidden
-          className="mx-auto mt-4 flex h-20 w-20 items-center justify-center rounded-full bg-indigo-100 text-3xl"
+          className="mx-auto mt-4 flex h-20 w-20 items-center justify-center rounded-full bg-highlight"
         >
-          🏅
+          <MedalIcon className="h-10 w-10 text-ink" />
         </div>
-        <h2 id="badge-celebration-title" className="mt-4 text-lg font-semibold text-slate-800">
+        <h2 id="badge-celebration-title" className="mt-4 font-display text-xl font-bold text-ink">
           {badge.name}
         </h2>
-        <p className="mt-1 text-sm text-slate-600">{badge.description}</p>
+        <p className="mt-1 text-sm text-ink-muted">{badge.description}</p>
         <div className="mt-6">
           <Button onClick={onDismiss}>Continuar</Button>
         </div>

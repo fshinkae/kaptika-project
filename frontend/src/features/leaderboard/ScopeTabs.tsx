@@ -27,12 +27,12 @@ export function ScopeTabs({
             type="button"
             aria-selected={selected}
             onClick={() => onChange(value)}
-            className={`min-h-[44px] flex-1 rounded-xl px-4 text-sm font-medium transition
-              focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600
+            className={`min-h-[44px] flex-1 rounded-control px-4 text-sm font-medium transition
+              focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pen-600
               ${
                 selected
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-white text-indigo-700 ring-1 ring-indigo-200 hover:bg-indigo-50'
+                  ? 'bg-pen-600 text-white'
+                  : 'bg-surface text-pen-700 ring-1 ring-pen-200 hover:bg-pen-50'
               }`}
           >
             {LABELS[value]}

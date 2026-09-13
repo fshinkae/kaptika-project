@@ -23,9 +23,9 @@ export function LevelMeter({ level, xpToNextLevel, hideLabel = false }: LevelMet
     <div className="w-full">
       {!hideLabel && (
         <div className="mb-1.5 flex items-baseline justify-between text-sm">
-          <span className="font-semibold text-slate-800">Nível {level}</span>
-          <span className="text-slate-600">
-            faltam <span className="font-medium text-slate-700">{xpToNextLevel}</span> XP
+          <span className="font-semibold text-ink">Nível {level}</span>
+          <span className="text-ink-muted">
+            faltam <span className="font-medium text-ink">{xpToNextLevel}</span> XP
           </span>
         </div>
       )}
@@ -36,10 +36,10 @@ export function LevelMeter({ level, xpToNextLevel, hideLabel = false }: LevelMet
         aria-valuenow={percent}
         aria-valuetext={valueText}
         aria-label={`Progresso do nível ${level}`}
-        className="h-3 w-full overflow-hidden rounded-full bg-slate-200"
+        className="h-3 w-full overflow-hidden rounded-full bg-line"
       >
         <div
-          className="h-full rounded-full bg-indigo-600 transition-[width] duration-500 ease-out"
+          className="h-full rounded-full bg-pen-600 transition-[width] duration-500 ease-out"
           style={{ width: `${percent}%` }}
         />
       </div>

@@ -16,11 +16,11 @@ export function ErrorState({
       role="alert"
       className={
         compact
-          ? 'flex flex-col items-center gap-3 rounded-2xl bg-white p-5 text-center ring-1 ring-slate-200'
+          ? 'flex flex-col items-center gap-3 rounded-card bg-surface p-5 text-center ring-1 ring-line'
           : 'flex min-h-[40vh] flex-col items-center justify-center gap-4 px-6 text-center'
       }
     >
-      <p className="text-sm text-slate-600">{message}</p>
+      <p className="text-sm text-ink-muted">{message}</p>
       {onRetry && (
         <Button variant="secondary" onClick={onRetry}>
           Tentar novamente

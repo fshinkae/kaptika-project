@@ -61,7 +61,7 @@ function ProfileView({
   return (
     <div className="flex flex-col items-center gap-6">
       <Avatar src={profile.avatarUrl} name={profile.displayName} />
-      <h1 className="text-xl font-semibold text-slate-800">{profile.displayName}</h1>
+      <h1 className="text-xl font-semibold text-ink">{profile.displayName}</h1>
 
       <dl className="grid w-full grid-cols-2 gap-3">
         <Stat label="XP total" value={progress.xpTotal} />
@@ -84,9 +84,9 @@ function ProfileView({
 
 function Stat({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="rounded-xl bg-white p-4 text-center ring-1 ring-slate-100">
-      <dt className="text-xs uppercase tracking-wide text-slate-600">{label}</dt>
-      <dd className="mt-1 text-lg font-semibold text-slate-800">{value}</dd>
+    <div className="rounded-control bg-surface p-4 text-center ring-1 ring-line">
+      <dt className="text-xs font-medium text-ink-muted">{label}</dt>
+      <dd className="mt-1 font-display text-xl font-bold text-ink">{value}</dd>
     </div>
   )
 }
@@ -134,7 +134,7 @@ function ProfileEditForm({
       })}
       className="flex flex-col gap-4"
     >
-      <h1 className="text-lg font-semibold text-slate-800">Editar perfil</h1>
+      <h1 className="text-lg font-semibold text-ink">Editar perfil</h1>
       <FormField label="Nome de exibição" error={errors.displayName?.message} {...register('displayName')} />
       <FormField
         label="URL do avatar"
@@ -144,7 +144,7 @@ function ProfileEditForm({
         {...register('avatarUrl')}
       />
       {formError && (
-        <p role="alert" className="text-sm text-red-700">
+        <p role="alert" className="text-sm text-danger">
           {formError}
         </p>
       )}

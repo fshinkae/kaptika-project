@@ -4,11 +4,11 @@ export function LoadingState({ label = 'Carregando…' }: { label?: string }) {
     <div
       role="status"
       aria-live="polite"
-      className="flex min-h-[40vh] flex-col items-center justify-center gap-3 text-slate-600"
+      className="flex min-h-[40vh] flex-col items-center justify-center gap-3 text-ink-muted"
     >
       <span
         aria-hidden
-        className="h-8 w-8 animate-spin rounded-full border-2 border-slate-300 border-t-indigo-600"
+        className="h-8 w-8 animate-spin rounded-full border-2 border-line border-t-pen-600"
       />
       <span className="text-sm">{label}</span>
     </div>

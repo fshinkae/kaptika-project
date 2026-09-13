@@ -69,7 +69,7 @@ export function SignupPage() {
           {...register('password')}
         />
         {formError && (
-          <p role="alert" className="text-sm text-red-700">
+          <p role="alert" className="text-sm text-danger">
             {formError}
           </p>
         )}
@@ -104,28 +104,28 @@ function ConfirmEmail({ email, onChangeEmail }: { email: string; onChangeEmail: 
       footer={<TextLink to="/login">Já confirmei, quero entrar</TextLink>}
     >
       <div className="flex flex-col gap-4 text-center">
-        <p className="text-base text-slate-700">
-          Enviamos um link para <strong className="break-all text-slate-900">{email}</strong>. Toque
+        <p className="text-base text-ink">
+          Enviamos um link para <strong className="break-all text-ink">{email}</strong>. Toque
           nele para ativar a conta e começar a primeira sessão.
         </p>
-        <p className="text-sm text-slate-600">Não chegou? Olhe também o spam e a aba Promoções.</p>
+        <p className="text-sm text-ink-muted">Não chegou? Olhe também o spam e a aba Promoções.</p>
         <Button variant="secondary" onClick={resend} disabled={status === 'sending'}>
           {status === 'sending' ? 'Reenviando…' : 'Reenviar e-mail'}
         </Button>
-        <p role="status" aria-live="polite" className="min-h-5 text-sm text-slate-600">
+        <p role="status" aria-live="polite" className="min-h-5 text-sm text-ink-muted">
           {status === 'sent' ? 'E-mail reenviado.' : ''}
         </p>
         {status === 'error' && (
-          <p role="alert" className="text-sm text-red-700">
+          <p role="alert" className="text-sm text-danger">
             Não foi possível reenviar agora. Tente de novo em 1 minuto.
           </p>
         )}
         <button
           type="button"
           onClick={onChangeEmail}
-          className="mx-auto inline-flex min-h-11 items-center rounded-lg px-2 text-sm font-medium text-indigo-600
+          className="mx-auto inline-flex min-h-11 items-center rounded-lg px-2 text-sm font-medium text-pen-600
             underline-offset-2 hover:underline
-            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pen-600"
         >
           Usei o e-mail errado
         </button>
