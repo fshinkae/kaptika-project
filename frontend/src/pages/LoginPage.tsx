@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import { loginSchema, type LoginForm } from '../auth/schemas'
 import { AuthLayout } from '../components/AuthLayout'
 import { Button } from '../components/Button'
 import { FormField } from '../components/FormField'
+import { PasswordField } from '../components/PasswordField'
+import { TextLink } from '../components/TextLink'
 
 /** Mensagem sempre genérica: nunca revela se o e-mail existe (FR-007, SC-005). */
 const GENERIC_LOGIN_ERROR = 'E-mail ou senha incorretos.'
@@ -41,9 +43,7 @@ export function LoginPage() {
       footer={
         <>
           Não tem conta?{' '}
-          <Link to="/cadastro" className="font-medium text-indigo-600">
-            Cadastre-se
-          </Link>
+          <TextLink to="/cadastro">Cadastre-se</TextLink>
         </>
       }
     >
@@ -55,9 +55,8 @@ export function LoginPage() {
           error={errors.email?.message}
           {...register('email')}
         />
-        <FormField
+        <PasswordField
           label="Senha"
-          type="password"
           autoComplete="current-password"
           error={errors.password?.message}
           {...register('password')}
@@ -70,9 +69,9 @@ export function LoginPage() {
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? 'Entrando…' : 'Entrar'}
         </Button>
-        <Link to="/recuperar-senha" className="text-center text-sm text-indigo-600">
+        <TextLink to="/recuperar-senha" className="self-center text-sm">
           Esqueci minha senha
-        </Link>
+        </TextLink>
       </form>
     </AuthLayout>
   )

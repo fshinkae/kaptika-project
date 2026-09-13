@@ -24,6 +24,8 @@ App React + TypeScript + Vite (mobile-first) nascendo nesta feature (diretório 
 - **Perfil** → `GET /me` do backend via React Query (`@tanstack/react-query`) para cache/estados; edição via `PATCH /me` com invalidação do cache (reflete o novo nome em toda a UI — FR-009, SC-004).
 - **Data fetching** → React Query padroniza carregando/erro/vazio e o refetch; evita estado manual espalhado.
 - **Testes** → Vitest + Testing Library + **MSW** (mock da API) e **mock do `@supabase/supabase-js`** (sessão fake) — sem rede, sem projeto Supabase real. jsdom como ambiente.
+- **Cadastro sem atrito** (auditoria de conversão, CAD-2) → só e-mail e senha; o nome inicial vem do backend (`DisplayNames`: metadata → parte local do e-mail) e é editável no perfil. Regra de senha visível antes do erro e botão mostrar/ocultar.
+- **Confirmação de e-mail** (CAD-1) → se o `signUp` voltar sem sessão (confirmação ligada no Supabase), a tela mostra "Confira seu e-mail" com reenvio (`auth.resend`) em vez de cair no login sem explicação. Decisão de produto: confirmação desligada no MVP; a tela cobre o caso de ela voltar a ser ligada.
 - **Erro de login genérico** (FR-007/SC-005) → a UI nunca diferencia "e-mail não existe" de "senha errada"; mostra sempre a mesma mensagem.
 
 ## Abordagem técnica

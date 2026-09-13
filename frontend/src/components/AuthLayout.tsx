@@ -4,10 +4,12 @@ import { Link } from 'react-router-dom'
 /** Moldura mobile-first das telas de autenticação. */
 export function AuthLayout({
   title,
+  subtitle,
   children,
   footer,
 }: {
   title: string
+  subtitle?: string
   children: ReactNode
   footer?: ReactNode
 }) {
@@ -18,6 +20,7 @@ export function AuthLayout({
           Kaptika
         </Link>
         <h1 className="mt-4 text-xl font-semibold text-slate-800">{title}</h1>
+        {subtitle && <p className="mt-2 text-base text-slate-600">{subtitle}</p>}
       </header>
       {children}
       {footer && <div className="text-center text-sm text-slate-600">{footer}</div>}

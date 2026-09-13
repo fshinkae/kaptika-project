@@ -8,11 +8,6 @@ export const loginSchema = z.object({
 })
 
 export const signupSchema = z.object({
-  displayName: z
-    .string()
-    .trim()
-    .min(2, 'O nome deve ter ao menos 2 caracteres.')
-    .max(40, 'O nome deve ter no máximo 40 caracteres.'),
   email: z.email('Informe um e-mail válido.'),
   password: z
     .string()
