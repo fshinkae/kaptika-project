@@ -1,17 +1,22 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import { signupSchema, type SignupForm } from '../auth/schemas'
 import { AuthLayout } from '../components/AuthLayout'
 import { Button } from '../components/Button'
 import { FormField } from '../components/FormField'
+import { PasswordField } from '../components/PasswordField'
+import { TextLink } from '../components/TextLink'
 
 export function SignupPage() {
   const { signUp } = useAuth()
   const navigate = useNavigate()
   const [formError, setFormError] = useState<string | null>(null)
+  // E-mail aguardando confirmação: sem isso, a conta sem sessão caía no login
+  // sem explicação e o estudante achava que o cadastro tinha falhado.
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null)
 
   const {
     register,
@@ -22,48 +27,49 @@ export function SignupPage() {
   async function onSubmit(data: SignupForm) {
     setFormError(null)
     try {
-      await signUp(data)
+      const { needsConfirmation } = await signUp(data)
+      if (needsConfirmation) {
+        setPendingEmail(data.email)
+        return
+      }
       navigate('/', { replace: true })
     } catch {
       setFormError('Não foi possível criar a conta. Tente novamente.')
     }
   }
 
+  if (pendingEmail) {
+    return <ConfirmEmail email={pendingEmail} onChangeEmail={() => setPendingEmail(null)} />
+  }
+
   return (
     <AuthLayout
-      title="Criar conta"
+      title="Crie sua conta"
+      subtitle="Questões do ENEM em sessões curtas, com o gabarito na hora."
       footer={
         <>
-          Já tem conta?{' '}
-          <Link to="/login" className="font-medium text-indigo-600">
-            Entrar
-          </Link>
+          Já tem conta? <TextLink to="/login">Entrar</TextLink>
         </>
       }
     >
       <form noValidate onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <FormField
-          label="Nome de exibição"
-          autoComplete="nickname"
-          error={errors.displayName?.message}
-          {...register('displayName')}
-        />
-        <FormField
           label="E-mail"
           type="email"
+          inputMode="email"
           autoComplete="email"
           error={errors.email?.message}
           {...register('email')}
         />
-        <FormField
+        <PasswordField
           label="Senha"
-          type="password"
           autoComplete="new-password"
+          hint="Mínimo de 8 caracteres, com letras e números."
           error={errors.password?.message}
           {...register('password')}
         />
         {formError && (
-          <p role="alert" className="text-sm text-red-600">
+          <p role="alert" className="text-sm text-red-700">
             {formError}
           </p>
         )}
@@ -71,6 +77,59 @@ export function SignupPage() {
           {isSubmitting ? 'Criando…' : 'Criar conta'}
         </Button>
       </form>
+    </AuthLayout>
+  )
+}
+
+type ResendStatus = 'idle' | 'sending' | 'sent' | 'error'
+
+/** Conta criada, falta confirmar o e-mail (projeto com confirmação ligada). */
+function ConfirmEmail({ email, onChangeEmail }: { email: string; onChangeEmail: () => void }) {
+  const { resendConfirmation } = useAuth()
+  const [status, setStatus] = useState<ResendStatus>('idle')
+
+  async function resend() {
+    setStatus('sending')
+    try {
+      await resendConfirmation(email)
+      setStatus('sent')
+    } catch {
+      setStatus('error')
+    }
+  }
+
+  return (
+    <AuthLayout
+      title="Confira seu e-mail"
+      footer={<TextLink to="/login">Já confirmei, quero entrar</TextLink>}
+    >
+      <div className="flex flex-col gap-4 text-center">
+        <p className="text-base text-slate-700">
+          Enviamos um link para <strong className="break-all text-slate-900">{email}</strong>. Toque
+          nele para ativar a conta e começar a primeira sessão.
+        </p>
+        <p className="text-sm text-slate-600">Não chegou? Olhe também o spam e a aba Promoções.</p>
+        <Button variant="secondary" onClick={resend} disabled={status === 'sending'}>
+          {status === 'sending' ? 'Reenviando…' : 'Reenviar e-mail'}
+        </Button>
+        <p role="status" aria-live="polite" className="min-h-5 text-sm text-slate-600">
+          {status === 'sent' ? 'E-mail reenviado.' : ''}
+        </p>
+        {status === 'error' && (
+          <p role="alert" className="text-sm text-red-700">
+            Não foi possível reenviar agora. Tente de novo em 1 minuto.
+          </p>
+        )}
+        <button
+          type="button"
+          onClick={onChangeEmail}
+          className="mx-auto inline-flex min-h-11 items-center rounded-lg px-2 text-sm font-medium text-indigo-600
+            underline-offset-2 hover:underline
+            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        >
+          Usei o e-mail errado
+        </button>
+      </div>
     </AuthLayout>
   )
 }

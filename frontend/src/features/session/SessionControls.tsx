@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Button } from '../../components/Button'
+import { ClockIcon } from '../../components/Icons'
 
 /**
  * Cronômetro da sessão de estudo. Conta a partir do início real da sessão
@@ -50,7 +51,10 @@ function formatElapsed(ms: number): string {
   return hours > 0 ? `${hours}:${minutes}:${seconds}` : `${minutes}:${seconds}`
 }
 
-/** Barra de controle da sessão: tempo decorrido e pausar/retomar. */
+/**
+ * Tempo decorrido e pausar/retomar. Discreto de propósito (SES-7): em sessão
+ * curta, cronômetro em destaque vira pressão e compete com a questão.
+ */
 export function SessionControls({
   elapsed,
   paused,
@@ -65,21 +69,19 @@ export function SessionControls({
   disabled?: boolean
 }) {
   return (
-    <div className="flex items-center justify-between gap-3">
-      <p
-        role="timer"
-        aria-label="Tempo de estudo"
-        className="font-mono text-lg font-semibold tabular-nums text-slate-700"
-      >
-        {elapsed}
+    <div className="-my-2 flex items-center justify-between gap-3">
+      <p className="flex items-center gap-1.5 text-sm text-slate-600">
+        <ClockIcon className="h-4 w-4" />
+        <span role="timer" aria-label="Tempo de estudo" className="tabular-nums">
+          {elapsed}
+        </span>
       </p>
       <button
         type="button"
         onClick={paused ? onResume : onPause}
         disabled={disabled}
-        className="min-h-[44px] rounded-xl px-4 text-sm font-semibold text-indigo-700 ring-1
-          ring-indigo-200 transition duration-200 hover:bg-indigo-50 disabled:cursor-not-allowed
-          disabled:text-slate-400 disabled:ring-slate-200
+        className="-mr-3 min-h-[44px] rounded-xl px-3 text-sm font-semibold text-indigo-700
+          transition duration-200 hover:bg-indigo-50 disabled:cursor-not-allowed disabled:text-slate-400
           focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
       >
         {paused ? 'Retomar' : 'Pausar'}
@@ -120,7 +122,7 @@ export function FinishControls({
       <button
         type="button"
         onClick={onAsk}
-        className="min-h-[44px] text-sm font-medium text-slate-500 underline-offset-2 hover:underline
+        className="min-h-[44px] text-sm font-medium text-slate-600 underline-offset-2 hover:underline
           focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
       >
         Encerrar sessão

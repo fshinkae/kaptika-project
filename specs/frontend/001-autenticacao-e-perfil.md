@@ -16,7 +16,7 @@
 
 ### User Story 1 - Cadastrar e entrar pelo celular (Priority: P1)
 
-Um estudante cria conta (e-mail, senha, nome de exibição) e entra usando as telas mobile-first. Após autenticar, é levado à tela inicial de estudo. A sessão persiste ao reabrir o app.
+Um estudante cria conta (e-mail e senha; o nome inicial vem do e-mail e é editável no perfil) e entra usando as telas mobile-first. Após autenticar, é levado à tela inicial de estudo. A sessão persiste ao reabrir o app.
 
 **Why this priority**: É a porta de entrada; sem ela nenhuma tela protegida é acessível.
 
@@ -30,7 +30,7 @@ Um estudante cria conta (e-mail, senha, nome de exibição) e entra usando as te
 
 3.  **Given** um estudante autenticado, **When** reabre o app dentro da validade da sessão, **Then** permanece logado sem reinformar credenciais.
 
-4.  **Given** campos inválidos (e-mail malformado, senha fraca, nome vazio), **When** tenta enviar, **Then** o formulário bloqueia e explica cada erro.
+4.  **Given** campos inválidos (e-mail malformado, senha fraca), **When** tenta enviar, **Then** o formulário bloqueia e explica cada erro.
 
 ### User Story 2 - Rotas protegidas e logout (Priority: P1)
 

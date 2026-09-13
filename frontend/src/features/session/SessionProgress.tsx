@@ -6,13 +6,7 @@ export function SessionProgress({ current, total }: { current: number; total: nu
   const clamped = Math.min(current, total)
   const pct = total > 0 ? (clamped / total) * 100 : 0
   return (
-    <div className="flex flex-col gap-1">
-      <div className="flex justify-between text-sm font-medium text-slate-600">
-        <span>Progresso</span>
-        <span aria-hidden>
-          {clamped}/{total}
-        </span>
-      </div>
+    <div className="flex flex-1 items-center gap-3">
       <div
         role="progressbar"
         aria-valuemin={0}
@@ -22,10 +16,13 @@ export function SessionProgress({ current, total }: { current: number; total: nu
         className="h-2 w-full overflow-hidden rounded-full bg-slate-200"
       >
         <div
-          className="h-full rounded-full bg-indigo-600 transition-[width]"
+          className="h-full rounded-full bg-indigo-600 transition-[width] duration-300"
           style={{ width: `${pct}%` }}
         />
       </div>
+      <span aria-hidden className="shrink-0 text-sm font-semibold tabular-nums text-slate-600">
+        {clamped}/{total}
+      </span>
     </div>
   )
 }

@@ -24,6 +24,7 @@ Feature de leitura que **reflete** a coleção de medalhas do backend (`GET /me/
 - **Sem estado próprio de progresso** → o front nunca calcula/persiste XP/medalhas; só reflete a API (invariante do CLAUDE.md). O `localStorage` guarda apenas quais celebrações já foram mostradas (preferência de UI), não o estado de domínio.
 - **Testes** → Vitest + Testing Library + MSW (`http://api.test`) + mock do Supabase (`setSession`), via `renderWithProviders` — mesmo padrão de `ProfilePage.test.tsx`.
 - **Acessibilidade/mobile** → grid 1→2→3 colunas por breakpoint, alvos de toque ≥44px, foco visível, listas semânticas, `aria-label` nos cartões, barra de progresso acessível.
+- **Celebração global (MED-1, 2026-09-13)** → `BadgeCelebrationHost` montado no `AppShell`, não mais na galeria: a semeadura acontece no primeiro acesso ao app (para aluno novo, antes da 1ª sessão) e a conquista aparece quando o resumo da sessão invalida `['badges']`. Na galeria, a primeira visita semeava a medalha recém-ganha como vista e ela nunca era celebrada. O diálogo prende o Tab e devolve o foco ao fechar (A11Y-3).
 
 ## Abordagem técnica
 

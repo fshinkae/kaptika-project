@@ -24,7 +24,7 @@ export function LevelMeter({ level, xpToNextLevel, hideLabel = false }: LevelMet
       {!hideLabel && (
         <div className="mb-1.5 flex items-baseline justify-between text-sm">
           <span className="font-semibold text-slate-800">Nível {level}</span>
-          <span className="text-slate-500">
+          <span className="text-slate-600">
             faltam <span className="font-medium text-slate-700">{xpToNextLevel}</span> XP
           </span>
         </div>

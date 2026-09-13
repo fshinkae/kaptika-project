@@ -11,12 +11,21 @@ export function BadgeCelebration({ badge, onDismiss }: { badge: BadgeView; onDis
   const dialogRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    const opener = document.activeElement
     dialogRef.current?.focus()
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onDismiss()
+      // Diálogo modal com um único controle: Tab não vaza para a página por trás.
+      if (e.key === 'Tab') {
+        e.preventDefault()
+        dialogRef.current?.querySelector('button')?.focus()
+      }
     }
     document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      if (opener instanceof HTMLElement) opener.focus()
+    }
   }, [onDismiss, badge.slug])
 
   return (
@@ -45,7 +54,7 @@ export function BadgeCelebration({ badge, onDismiss }: { badge: BadgeView; onDis
         <h2 id="badge-celebration-title" className="mt-4 text-lg font-semibold text-slate-800">
           {badge.name}
         </h2>
-        <p className="mt-1 text-sm text-slate-500">{badge.description}</p>
+        <p className="mt-1 text-sm text-slate-600">{badge.description}</p>
         <div className="mt-6">
           <Button onClick={onDismiss}>Continuar</Button>
         </div>

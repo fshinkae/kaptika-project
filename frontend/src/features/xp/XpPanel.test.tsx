@@ -23,8 +23,9 @@ describe('XpPanel', () => {
     renderWithProviders(<XpPanel />)
 
     expect(await screen.findByText('250')).toBeInTheDocument() // XP total
-    expect(screen.getAllByText('Nível 2').length).toBeGreaterThan(0) // nível
+    expect(screen.getByText('Nível 2')).toBeInTheDocument() // nível, uma vez só (DUP-1)
     expect(screen.getByText('120')).toBeInTheDocument() // XP da semana
+    expect(screen.queryByText(/Faltam p\/ nível/)).not.toBeInTheDocument()
   })
 
   it('barra de progresso reflete a porcentagem derivada de xpToNextLevel (FR-004/FR-009)', async () => {

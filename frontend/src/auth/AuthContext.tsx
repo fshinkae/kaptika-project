@@ -5,7 +5,6 @@ import { supabase } from '../lib/supabase'
 interface SignUpParams {
   email: string
   password: string
-  displayName: string
 }
 
 interface AuthContextValue {
@@ -14,7 +13,9 @@ interface AuthContextValue {
   /** true enquanto a sessão persistida ainda não foi restaurada. */
   loading: boolean
   signIn: (email: string, password: string) => Promise<void>
-  signUp: (params: SignUpParams) => Promise<void>
+  /** `needsConfirmation`: o projeto exige confirmar o e-mail antes da 1ª sessão. */
+  signUp: (params: SignUpParams) => Promise<{ needsConfirmation: boolean }>
+  resendConfirmation: (email: string) => Promise<void>
   signOut: () => Promise<void>
   recoverPassword: (email: string) => Promise<void>
 }
@@ -48,12 +49,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) throw error
     },
-    async signUp({ email, password, displayName }) {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { name: displayName } },
-      })
+    async signUp({ email, password }) {
+      // Sem nome no cadastro: o backend deriva o nome inicial do e-mail e o
+      // estudante pode trocá-lo no perfil.
+      const { data, error } = await supabase.auth.signUp({ email, password })
+      if (error) throw error
+      // Com confirmação de e-mail ligada no Supabase, a conta nasce sem sessão.
+      return { needsConfirmation: !data.session }
+    },
+    async resendConfirmation(email) {
+      const { error } = await supabase.auth.resend({ type: 'signup', email })
       if (error) throw error
     },
     async signOut() {

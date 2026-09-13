@@ -44,6 +44,9 @@ export const authMock = {
     return Promise.resolve({ error: null })
   }),
   refreshSession: vi.fn((): AuthResult => Promise.resolve({ data: { session }, error: null })),
+  resend: vi.fn(
+    (): Promise<{ data: unknown; error: unknown }> => Promise.resolve({ data: {}, error: null }),
+  ),
   resetPasswordForEmail: vi.fn(
     (): Promise<{ data: unknown; error: unknown }> => Promise.resolve({ data: {}, error: null }),
   ),

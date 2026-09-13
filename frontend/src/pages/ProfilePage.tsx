@@ -12,6 +12,7 @@ import { Button } from '../components/Button'
 import { ErrorState } from '../components/ErrorState'
 import { FormField } from '../components/FormField'
 import { LoadingState } from '../components/LoadingState'
+import { formatDays } from '../lib/format'
 
 const editSchema = z.object({
   displayName: z.string().trim().min(2, 'Mínimo de 2 caracteres.').max(40, 'Máximo de 40 caracteres.'),
@@ -65,7 +66,7 @@ function ProfileView({
       <dl className="grid w-full grid-cols-2 gap-3">
         <Stat label="XP total" value={progress.xpTotal} />
         <Stat label="Nível" value={progress.level} />
-        <Stat label="Ofensiva" value={`${progress.streakCurrent} dias`} />
+        <Stat label="Ofensiva" value={formatDays(progress.streakCurrent)} />
         <Stat label="Medalhas" value={progress.badgesCount} />
       </dl>
 
@@ -84,7 +85,7 @@ function ProfileView({
 function Stat({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="rounded-xl bg-white p-4 text-center ring-1 ring-slate-100">
-      <dt className="text-xs uppercase tracking-wide text-slate-500">{label}</dt>
+      <dt className="text-xs uppercase tracking-wide text-slate-600">{label}</dt>
       <dd className="mt-1 text-lg font-semibold text-slate-800">{value}</dd>
     </div>
   )
@@ -143,7 +144,7 @@ function ProfileEditForm({
         {...register('avatarUrl')}
       />
       {formError && (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-red-700">
           {formError}
         </p>
       )}

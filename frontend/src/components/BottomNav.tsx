@@ -22,7 +22,7 @@ export function BottomNav() {
               end={item.end}
               className={({ isActive }) =>
                 `flex min-h-[56px] flex-col items-center justify-center gap-0.5 text-xs font-medium transition ${
-                  isActive ? 'text-indigo-600' : 'text-slate-500'
+                  isActive ? 'text-indigo-600' : 'text-slate-600'
                 }`
               }
             >

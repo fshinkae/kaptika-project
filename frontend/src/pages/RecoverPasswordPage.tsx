@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import { recoverSchema, type RecoverForm } from '../auth/schemas'
 import { AuthLayout } from '../components/AuthLayout'
 import { Button } from '../components/Button'
 import { FormField } from '../components/FormField'
+import { TextLink } from '../components/TextLink'
 
 export function RecoverPasswordPage() {
   const { recoverPassword } = useAuth()
@@ -32,9 +32,7 @@ export function RecoverPasswordPage() {
     <AuthLayout
       title="Recuperar senha"
       footer={
-        <Link to="/login" className="font-medium text-indigo-600">
-          Voltar ao login
-        </Link>
+        <TextLink to="/login">Voltar ao login</TextLink>
       }
     >
       {sent ? (

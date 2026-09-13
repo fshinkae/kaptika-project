@@ -16,7 +16,7 @@ export function BadgesGallery({ collection }: { collection: BadgeCollection }) {
           <h2 id="badges-achieved-heading" className="text-base font-semibold text-slate-800">
             Conquistadas
           </h2>
-          <span className="text-sm text-slate-500">
+          <span className="text-sm text-slate-600">
             {collection.achievedCount} de {collection.totalCount}
           </span>
         </div>
@@ -27,7 +27,7 @@ export function BadgesGallery({ collection }: { collection: BadgeCollection }) {
             ))}
           </ul>
         ) : (
-          <p className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-500 ring-1 ring-slate-100">
+          <p className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-600 ring-1 ring-slate-100">
             Você ainda não conquistou medalhas. Continue estudando para desbloquear a primeira!
           </p>
         )}

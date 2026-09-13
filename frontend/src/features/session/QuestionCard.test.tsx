@@ -148,3 +148,39 @@ describe('QuestionCard — imagens', () => {
     expect(screen.queryByRole('img', { name: 'Imagem da questão' })).not.toBeInTheDocument()
   })
 })
+
+describe('QuestionCard — navegação e correção', () => {
+  it('ao abrir a questão, o foco vai para o enunciado (SES-3)', () => {
+    renderCard()
+
+    expect(
+      screen.getByRole('heading', { name: 'Qual gráfico representa a distribuição?' }),
+    ).toHaveFocus()
+  })
+
+  it('depois de responder, os rótulos dizem qual é a correta e qual foi escolhida (A11Y-3)', () => {
+    render(
+      <QuestionCard
+        question={question()}
+        feedback={{
+          questionId: '2023-140',
+          chosen: 'B',
+          correct: false,
+          correctAlternative: 'A',
+          answeredCount: 1,
+          totalQuestions: 5,
+          sessionStatus: 'ACTIVE',
+        }}
+        onConfirm={() => {}}
+        isSubmitting={false}
+        onNext={() => {}}
+        nextLabel="Próxima questão"
+      />,
+    )
+
+    expect(screen.getByRole('radio', { name: 'Alternativa A: imagem (correta)' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('radio', { name: 'Alternativa B: Alternativa em texto (sua resposta, incorreta)' }),
+    ).toBeInTheDocument()
+  })
+})

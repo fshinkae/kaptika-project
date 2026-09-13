@@ -11,7 +11,7 @@ export function MyPositionCard({ me }: { me: MyPosition }) {
       className="flex items-center justify-between rounded-xl bg-indigo-600 px-4 py-3 text-white"
     >
       <div className="flex flex-col">
-        <span className="text-xs uppercase tracking-wide text-indigo-200">Sua posição</span>
+        <span className="text-xs uppercase tracking-wide text-indigo-100">Sua posição</span>
         <span className="text-lg font-semibold tabular-nums">#{me.rank}</span>
       </div>
       <span className="text-base font-semibold tabular-nums">

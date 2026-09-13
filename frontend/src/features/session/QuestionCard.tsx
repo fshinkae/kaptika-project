@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button } from '../../components/Button'
+import { CheckIcon, CloseIcon } from '../../components/Icons'
 import { ZoomableImage } from '../../components/ZoomableImage'
 import { QuestionContext } from './QuestionContext'
 import type { AlternativeView, AnswerResult, QuestionView } from './sessionApi'
@@ -27,6 +28,17 @@ export function QuestionCard({
 }) {
   const [selected, setSelected] = useState<string | null>(null)
   const answered = feedback !== null
+  const headingRef = useRef<HTMLHeadingElement>(null)
+
+  // Cada questão monta de novo (key no pai). Ela abre no topo e o foco vai ao
+  // enunciado (SES-3): antes, a próxima questão aparecia rolada até as
+  // alternativas e o foco se perdia com o botão "Próxima" desmontado.
+  useEffect(() => {
+    // Sempre ao topo e sem animação: com as imagens ainda carregando, a página
+    // encurta e o navegador prende a rolagem no meio da questão nova.
+    if (window.scrollY > 0) window.scrollTo({ top: 0, behavior: 'instant' })
+    headingRef.current?.focus({ preventScroll: true })
+  }, [])
 
   return (
     <section className="flex flex-col gap-5" aria-labelledby="question-statement">
@@ -34,7 +46,9 @@ export function QuestionCard({
 
       <h2
         id="question-statement"
-        className="whitespace-pre-wrap text-base font-semibold leading-relaxed text-slate-800"
+        ref={headingRef}
+        tabIndex={-1}
+        className="whitespace-pre-wrap text-base font-semibold leading-relaxed text-slate-800 focus:outline-none"
       >
         {question.statement}
       </h2>
@@ -56,7 +70,7 @@ export function QuestionCard({
                 value={alt.letter}
                 checked={selected === alt.letter}
                 onChange={() => setSelected(alt.letter)}
-                aria-label={alternativeLabel(alt)}
+                aria-label={alternativeLabel(alt, state)}
                 className="sr-only"
               />
               <span
@@ -82,6 +96,8 @@ export function QuestionCard({
                   />
                 )}
               </span>
+              {state === 'correct' && <CheckIcon className="h-5 w-5 shrink-0 text-green-700" />}
+              {state === 'wrong' && <CloseIcon className="h-5 w-5 shrink-0 text-red-700" />}
             </label>
           )
         })}
@@ -113,11 +129,18 @@ export function QuestionCard({
   )
 }
 
-/** Rótulo acessível: alternativas só de imagem não têm texto para ler. */
-function alternativeLabel(alt: AlternativeView): string {
-  return alt.text
+/**
+ * Rótulo acessível: alternativas só de imagem não têm texto para ler. Depois da
+ * resposta, diz qual é a correta e qual foi a escolhida (A11Y-3): a cor sozinha
+ * não chega ao leitor de tela.
+ */
+function alternativeLabel(alt: AlternativeView, state: AltState): string {
+  const base = alt.text
     ? `Alternativa ${alt.letter}: ${alt.text}`
     : `Alternativa ${alt.letter}: imagem`
+  if (state === 'correct') return `${base} (correta)`
+  if (state === 'wrong') return `${base} (sua resposta, incorreta)`
+  return base
 }
 
 type AltState = 'idle' | 'selected' | 'correct' | 'wrong'

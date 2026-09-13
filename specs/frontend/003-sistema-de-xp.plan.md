@@ -35,6 +35,7 @@ exportados por `features/xp/index.ts` para o coordenador plugar numa rota depois
   resumo de sessão (FR-003) e celebração de nível (FR-005) dependem do fluxo de
   sessão (feature 002), fora do escopo deste worktree; o `LevelMeter` fica pronto
   para reuso quando esse fluxo existir.
+- **Auditoria de conversão (2026-09-13)** → carregando vira esqueleto com a altura do card e erro vira card compacto (HOME-1); vazio é um card de uma linha. O painel mostra o nível uma vez só (no medidor) e o XP da semana numa linha, sem o grid que repetia "faltam X XP" (DUP-1).
 
 ## Abordagem técnica
 

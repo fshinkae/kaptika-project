@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
-import { LoadingState } from '../../components/LoadingState'
 import { ErrorState } from '../../components/ErrorState'
+import { FlameIcon } from '../../components/Icons'
+import { Skeleton } from '../../components/Skeleton'
+import { formatDays } from '../../lib/format'
 import { getStreak, type StreakState } from './streakApi'
 
 /**
@@ -11,10 +13,11 @@ import { getStreak, type StreakState } from './streakApi'
 export function StreakPanel() {
   const query = useQuery({ queryKey: ['streak'], queryFn: getStreak })
 
-  if (query.isPending) return <LoadingState label="Carregando sua ofensiva…" />
+  if (query.isPending) return <Skeleton label="Carregando sua ofensiva…" className="h-40" />
   if (query.isError) {
     return (
       <ErrorState
+        compact
         message="Não foi possível carregar sua ofensiva. Tente novamente."
         onRetry={() => query.refetch()}
       />
@@ -29,6 +32,8 @@ function StreakView({ streak }: { streak: StreakState }) {
   // A quebra tem prioridade sobre o convite inicial: mesmo com current 0,
   // se houve quebra desde o último acesso, comunicamos e incentivamos.
   const showInitialInvite = current === 0 && !brokenSinceLastAccess
+  // Quem nunca manteve ofensiva não precisa de recorde 0 nem de proteções ainda.
+  const showStats = !(showInitialInvite && record === 0)
 
   return (
     <section aria-labelledby="streak-heading" className="flex flex-col gap-5">
@@ -42,10 +47,17 @@ function StreakView({ streak }: { streak: StreakState }) {
 
       {metToday && current > 0 && <MetTodayBadge />}
 
-      <dl className="grid grid-cols-2 gap-3">
-        <Stat label="Recorde" value={`${record} dias`} />
-        <Stat label="Congelamentos" value={freezes} />
-      </dl>
+      {showStats && (
+        <div className="flex flex-col gap-2">
+          <dl className="grid grid-cols-2 gap-3">
+            <Stat label="Recorde" value={formatDays(record)} />
+            <Stat label="Proteções" value={freezes} />
+          </dl>
+          <p className="text-sm text-slate-600">
+            Se você passar um dia sem estudar, uma proteção é usada automaticamente.
+          </p>
+        </div>
+      )}
     </section>
   )
 }
@@ -61,7 +73,7 @@ function StreakHero({ current, metToday }: { current: number; metToday: boolean 
       <span className="text-5xl font-bold tabular-nums text-amber-600">{current}</span>
       <span className="text-sm font-medium text-slate-600">{label}</span>
       {metToday && current > 0 && (
-        <span className="mt-1 text-xs text-slate-500">Ofensiva mantida hoje!</span>
+        <span className="mt-1 text-xs text-slate-600">Ofensiva mantida hoje!</span>
       )}
     </div>
   )
@@ -80,17 +92,17 @@ function MetTodayBadge() {
   )
 }
 
-/** Estado inicial simpático quando ainda não há ofensiva (não é erro). */
+/** Estado inicial quando ainda não há ofensiva (não é erro): uma linha, sem ocupar a tela. */
 function InitialInvite() {
   return (
-    <div className="flex flex-col items-center gap-2 rounded-2xl bg-indigo-50 p-6 text-center ring-1 ring-indigo-100">
-      <span aria-hidden className="text-4xl">
-        🌱
-      </span>
-      <p className="text-base font-semibold text-slate-800">Comece sua ofensiva hoje!</p>
-      <p className="text-sm text-slate-600">
-        Estude um pouco todos os dias e veja sua sequência crescer.
-      </p>
+    <div className="flex items-start gap-3 rounded-2xl bg-white p-5 ring-1 ring-slate-100">
+      <FlameIcon className="h-6 w-6 shrink-0 text-amber-600" />
+      <div>
+        <p className="text-base font-semibold text-slate-800">Comece sua ofensiva hoje!</p>
+        <p className="mt-1 text-sm text-slate-600">
+          Conclua uma sessão por dia para a sequência crescer.
+        </p>
+      </div>
     </div>
   )
 }
@@ -110,7 +122,7 @@ function BreakBanner({ brokenAt }: { brokenAt: string | null }) {
       <p className="text-sm text-slate-600">
         Tudo bem — recomeços fazem parte. Que tal retomar hoje?
       </p>
-      {brokenAt && <p className="text-xs text-slate-500">Última sequência até {formatDate(brokenAt)}.</p>}
+      {brokenAt && <p className="text-xs text-slate-600">Última sequência até {formatDate(brokenAt)}.</p>}
     </div>
   )
 }
@@ -118,7 +130,7 @@ function BreakBanner({ brokenAt }: { brokenAt: string | null }) {
 function Stat({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="rounded-xl bg-white p-4 text-center ring-1 ring-slate-100">
-      <dt className="text-xs uppercase tracking-wide text-slate-500">{label}</dt>
+      <dt className="text-xs font-medium text-slate-600">{label}</dt>
       <dd className="mt-1 text-lg font-semibold text-slate-800">{value}</dd>
     </div>
   )

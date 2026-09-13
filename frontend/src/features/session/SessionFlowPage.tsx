@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
 import { ApiError } from '../../lib/apiClient'
+import { useFocusMode } from '../../components/AppShell'
 import { Button } from '../../components/Button'
 import { EmptyState } from '../../components/EmptyState'
 import { ErrorState } from '../../components/ErrorState'
+import { CloseIcon } from '../../components/Icons'
 import { LoadingState } from '../../components/LoadingState'
 import { AreaSelect } from './AreaSelect'
 import { QuestionCard } from './QuestionCard'
@@ -28,13 +31,16 @@ import {
   type SessionSummary,
 } from './sessionApi'
 
+/** Caches derivados de sessões concluídas: XP, ofensiva, medalhas e placar mudam no backend. */
+const PROGRESS_QUERY_KEYS = [['xp'], ['streak'], ['badges'], ['profile'], ['leaderboard']]
+
 /**
  * Página de topo do fluxo de sessões (feature 002). Máquina de estados
  * autocontida: escolha de área → responder uma questão por vez → resumo.
  * O frontend reflete o estado da API; nada de correção/progresso local.
  */
 export function SessionFlowPage() {
-  const [sessionId, setSessionId] = useState<string | null>(null)
+  const [session, setSession] = useState<SessionResponse | null>(null)
   const [summary, setSummary] = useState<SessionSummary | null>(null)
   const [startingArea, setStartingArea] = useState<AreaSlug | null>(null)
   // Só existe uma sessão ativa por estudante (FR-011): se ela for de outra
@@ -53,16 +59,23 @@ export function SessionFlowPage() {
     gcTime: 0,
   })
 
+  function refreshProgress() {
+    queryClient.invalidateQueries({ queryKey: ['session', 'active'] })
+    for (const queryKey of PROGRESS_QUERY_KEYS) {
+      queryClient.invalidateQueries({ queryKey })
+    }
+  }
+
   const createMutation = useMutation({
     mutationFn: (area: AreaSlug) => createSession(area),
-    // A resposta de criação traz o id; o GET da sessão é a fonte de verdade
-    // do estado (questões, nextQuestionId), refletido em <ActiveSession>.
-    onSuccess: (session, area) => {
-      if (session.area !== area) {
-        setConflict(session)
+    // A resposta de criação já é o estado completo da sessão (SES-4): a
+    // condução parte dela, sem um GET extra antes da 1ª questão.
+    onSuccess: (created, area) => {
+      if (created.area !== area) {
+        setConflict(created)
         return
       }
-      setSessionId(session.id)
+      setSession(created)
     },
   })
 
@@ -72,14 +85,15 @@ export function SessionFlowPage() {
       await finishSession(input.activeId)
       return createSession(input.area)
     },
-    onSuccess: (session) => {
+    onSuccess: (created) => {
       setConflict(null)
-      setSessionId(session.id)
+      setSession(created)
+      refreshProgress()
     },
   })
 
   function reset() {
-    setSessionId(null)
+    setSession(null)
     setSummary(null)
     setStartingArea(null)
     setConflict(null)
@@ -102,7 +116,7 @@ export function SessionFlowPage() {
         error={switchAreaMutation.error}
         onResume={() => {
           setConflict(null)
-          setSessionId(conflict.id)
+          setSession(conflict)
         }}
         onSwitch={() =>
           switchAreaMutation.mutate({ activeId: conflict.id, area: startingArea })
@@ -111,14 +125,18 @@ export function SessionFlowPage() {
     )
   }
 
-  if (sessionId) {
+  const current = session ?? activeQuery.data
+  if (current) {
     return (
       <ActiveSession
-        sessionId={sessionId}
+        key={current.id}
+        initial={current}
         onFinished={(result) => {
           setSummary(result)
-          setSessionId(null)
-          queryClient.invalidateQueries({ queryKey: ['session', 'active'] })
+          setSession(null)
+          // Encerrar gera XP, ofensiva e medalhas no backend: a UI reconsulta
+          // em vez de supor os novos valores (RES-1).
+          refreshProgress()
         }}
       />
     )
@@ -126,19 +144,6 @@ export function SessionFlowPage() {
 
   if (activeQuery.isPending) {
     return <LoadingState label="Carregando sua sessão…" />
-  }
-
-  if (activeQuery.data) {
-    return (
-      <ActiveSession
-        sessionId={activeQuery.data.id}
-        onFinished={(result) => {
-          setSummary(result)
-          setSessionId(null)
-          queryClient.invalidateQueries({ queryKey: ['session', 'active'] })
-        }}
-      />
-    )
   }
 
   return (
@@ -196,7 +201,7 @@ function AreaConflict({
       </div>
 
       {error != null && (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-red-700">
           Não foi possível trocar de área. Tente novamente.
         </p>
       )}
@@ -204,60 +209,83 @@ function AreaConflict({
   )
 }
 
-/** Condução da sessão ativa: uma questão por vez, feedback e encerramento. */
+/**
+ * Condução da sessão ativa: uma questão por vez, feedback e encerramento. Parte
+ * do estado já recebido da API e só volta a ela para avançar.
+ */
 function ActiveSession({
-  sessionId,
+  initial,
   onFinished,
 }: {
-  sessionId: string
+  initial: SessionResponse
   onFinished: (summary: SessionSummary) => void
 }) {
+  const [session, setSession] = useState(initial)
   const [feedback, setFeedback] = useState<AnswerResult | null>(null)
   const [confirmingFinish, setConfirmingFinish] = useState(false)
-
-  const query = useQuery({
-    queryKey: ['session', sessionId],
-    queryFn: () => getSession(sessionId),
-  })
-
-  // O cronômetro conta desde o início real da sessão (createdAt da API);
-  // enquanto ela carrega, usa "agora" e se ajusta no primeiro render com dados.
-  const stopwatch = useStudyStopwatch(query.data?.createdAt ?? new Date().toISOString())
+  const navigate = useNavigate()
+  // O cronômetro conta desde o início real da sessão (createdAt da API).
+  const stopwatch = useStudyStopwatch(session.createdAt)
+  useFocusMode()
 
   const answerMutation = useMutation({
     mutationFn: (input: { questionId: string; alternative: string }) =>
-      answerQuestion(sessionId, input),
+      answerQuestion(session.id, input),
     onSuccess: (result) => setFeedback(result),
   })
 
+  // Depois de responder, o GET da sessão é a fonte do novo nextQuestionId. O
+  // feedback só é limpo com o novo estado em mãos, para não reexibir a questão
+  // já respondida.
+  const reloadMutation = useMutation({
+    mutationFn: () => getSession(session.id),
+    onSuccess: (next) => {
+      setSession(next)
+      setFeedback(null)
+      answerMutation.reset()
+    },
+  })
+
   const finishMutation = useMutation({
-    mutationFn: () => finishSession(sessionId),
+    mutationFn: () => finishSession(session.id),
     onSuccess: onFinished,
   })
 
-  if (query.isPending) return <LoadingState label="Carregando sessão…" />
-  if (query.isError) return <ErrorState onRetry={() => query.refetch()} />
+  if (reloadMutation.isError) return <ErrorState onRetry={() => reloadMutation.mutate()} />
 
-  const session = query.data
   const current = session.questions.find((q) => q.questionId === session.nextQuestionId)
 
-  async function advance() {
+  function advance() {
     // Última questão respondida encerra a sessão no backend (sessionStatus).
     if (feedback && feedback.sessionStatus !== 'ACTIVE') {
       finishMutation.mutate()
       return
     }
-    // Reflete o novo estado antes de limpar o feedback, evitando reexibir a
-    // questão anterior (já respondida) durante o refetch.
-    await query.refetch()
-    setFeedback(null)
-    answerMutation.reset()
+    reloadMutation.mutate()
   }
 
-  const total = session.totalQuestions
-
   return (
-    <main className="mx-auto flex w-full max-w-md flex-col gap-6 px-5 py-8">
+    <main className="mx-auto flex w-full max-w-md flex-col gap-5 px-5 pt-3 pb-8">
+      <header className="flex items-center gap-2">
+        {/* A navegação some durante a sessão (modo foco); sair não perde nada,
+            porque o progresso fica salvo e a sessão é retomada em Estudar. */}
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          aria-label="Sair da sessão"
+          title="Sair (o progresso fica salvo)"
+          className="-ml-3 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-slate-600
+            transition hover:bg-slate-100
+            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        >
+          <CloseIcon className="h-6 w-6" />
+        </button>
+        <SessionProgress
+          current={current?.position ?? session.answeredCount}
+          total={session.totalQuestions}
+        />
+      </header>
+
       <SessionControls
         elapsed={stopwatch.elapsed}
         paused={stopwatch.paused}
@@ -265,8 +293,6 @@ function ActiveSession({
         onResume={stopwatch.resume}
         disabled={answerMutation.isPending || finishMutation.isPending}
       />
-
-      <SessionProgress current={current?.position ?? session.answeredCount} total={total} />
 
       {stopwatch.paused ? (
         <PausedPanel onResume={stopwatch.resume} />
@@ -286,7 +312,7 @@ function ActiveSession({
             }
           />
           {answerMutation.isError && !feedback && (
-            <p role="alert" className="text-sm text-red-600">
+            <p role="alert" className="text-sm text-red-700">
               {answerErrorMessage(answerMutation.error)}
             </p>
           )}
@@ -312,7 +338,7 @@ function ActiveSession({
       />
 
       {finishMutation.isError && (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-red-700">
           Não foi possível encerrar a sessão. Tente novamente.
         </p>
       )}
