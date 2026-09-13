@@ -24,6 +24,7 @@ Tela de placar de líderes que **reflete** o ranking servido pelo backend: lista
 - **Estados de UI** → `LoadingState` (primeira página), `ErrorState` com repetir (falha da primeira página) e um erro inline com "Tentar novamente" para falha do "Carregar mais"; `EmptyState` quando `totalStudents === 0` / sem entries (FR-005).
 - **Isolamento arquitetural** → SOMENTE `frontend/src/features/leaderboard/`. Reuso de `apiFetch`, `ApiError`, `useAuth`, `LoadingState`, `ErrorState`, `EmptyState`, `Button`. **Não** editar App.tsx, main.tsx, apiClient.ts, auth/*, components/*. A `LeaderboardPage` é exportada (barrel `index.ts`) para plugue posterior.
 - **Testes** → Vitest + Testing Library + MSW (`http://api.test`) + mock stateful do Supabase, seguindo `ProfilePage.test.tsx` (`renderWithProviders`, `setSession`).
+- **Sem repetição (DUP-1, 2026-09-13)** → o cartão "Sua posição" só aparece quando o estudante está fora da página carregada; dentro dela, a própria linha já tem realce (`aria-current`).
 
 ## Abordagem técnica
 

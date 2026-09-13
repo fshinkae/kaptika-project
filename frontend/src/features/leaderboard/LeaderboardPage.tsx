@@ -28,6 +28,9 @@ export function LeaderboardPage() {
     isFetchingNextPage,
     isFetchNextPageError,
   } = useLeaderboard(scope)
+  // O cartão "Sua posição" só existe para quem está fora da página carregada;
+  // dentro dela, a própria linha já tem realce (DUP-1).
+  const meInPage = me != null && entries.some((entry) => entry.rank === me.rank)
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-col gap-4 px-5 py-8">
@@ -43,7 +46,7 @@ export function LeaderboardPage() {
         <ErrorState onRetry={() => refetch()} />
       ) : (
         <>
-          {me && <MyPositionCard me={me} />}
+          {me && !meInPage && <MyPositionCard me={me} />}
 
           {entries.length === 0 ? (
             <EmptyState>Ainda não há estudantes no placar. Comece a estudar para aparecer aqui!</EmptyState>

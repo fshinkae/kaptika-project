@@ -79,6 +79,22 @@ describe('LeaderboardPage', () => {
     expect(within(card).getByText('42 XP')).toBeInTheDocument()
   })
 
+  it('não repete a posição própria quando ela já está na lista (DUP-1)', async () => {
+    authenticate()
+    server.use(
+      http.get(`${API}/leaderboard`, () =>
+        HttpResponse.json(
+          page({ totalStudents: 2, entries: [entry(1, 'Ana', 900), entry(2, 'Bruno', 500)], me: { rank: 2, xp: 500 } }),
+        ),
+      ),
+    )
+    renderWithProviders(<LeaderboardPage />)
+
+    await screen.findByText('Bruno')
+    expect(screen.queryByRole('region', { name: 'Sua posição' })).not.toBeInTheDocument()
+    expect(screen.getAllByRole('listitem')[1]).toHaveAttribute('aria-current', 'true')
+  })
+
   it('diferencia nomes repetidos por profileId (FR-007)', async () => {
     authenticate()
     server.use(
