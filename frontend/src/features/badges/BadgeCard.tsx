@@ -34,15 +34,15 @@ export function BadgeCard({ badge }: { badge: BadgeView }) {
           {achieved ? initials(badge.name) : '🔒'}
         </span>
         <div className="min-w-0">
-          <h3 className={`truncate font-semibold ${achieved ? 'text-slate-800' : 'text-slate-500'}`}>
+          <h3 className={`truncate font-semibold ${achieved ? 'text-slate-800' : 'text-slate-600'}`}>
             {badge.name}
           </h3>
-          <p className="mt-0.5 text-sm text-slate-500">{badge.description}</p>
+          <p className="mt-0.5 text-sm text-slate-600">{badge.description}</p>
         </div>
       </div>
 
       {achieved && badge.awardedAt ? (
-        <p className="mt-3 text-xs text-slate-500">
+        <p className="mt-3 text-xs text-slate-600">
           Conquistada em{' '}
           <time dateTime={badge.awardedAt} className="font-medium text-slate-700">
             {formatAwardedDate(badge.awardedAt)}

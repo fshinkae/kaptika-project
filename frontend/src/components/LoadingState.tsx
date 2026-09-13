@@ -4,7 +4,7 @@ export function LoadingState({ label = 'Carregando…' }: { label?: string }) {
     <div
       role="status"
       aria-live="polite"
-      className="flex min-h-[40vh] flex-col items-center justify-center gap-3 text-slate-500"
+      className="flex min-h-[40vh] flex-col items-center justify-center gap-3 text-slate-600"
     >
       <span
         aria-hidden

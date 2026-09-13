@@ -54,7 +54,7 @@ export function BadgeCelebration({ badge, onDismiss }: { badge: BadgeView; onDis
         <h2 id="badge-celebration-title" className="mt-4 text-lg font-semibold text-slate-800">
           {badge.name}
         </h2>
-        <p className="mt-1 text-sm text-slate-500">{badge.description}</p>
+        <p className="mt-1 text-sm text-slate-600">{badge.description}</p>
         <div className="mt-6">
           <Button onClick={onDismiss}>Continuar</Button>
         </div>

@@ -69,7 +69,7 @@ export function SignupPage() {
           {...register('password')}
         />
         {formError && (
-          <p role="alert" className="text-sm text-red-600">
+          <p role="alert" className="text-sm text-red-700">
             {formError}
           </p>
         )}
@@ -116,7 +116,7 @@ function ConfirmEmail({ email, onChangeEmail }: { email: string; onChangeEmail: 
           {status === 'sent' ? 'E-mail reenviado.' : ''}
         </p>
         {status === 'error' && (
-          <p role="alert" className="text-sm text-red-600">
+          <p role="alert" className="text-sm text-red-700">
             Não foi possível reenviar agora. Tente de novo em 1 minuto.
           </p>
         )}

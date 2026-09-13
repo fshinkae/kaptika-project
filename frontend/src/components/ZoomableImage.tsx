@@ -31,7 +31,7 @@ export function ZoomableImage({
 
   if (!src || src.includes(MISSING_IMAGE) || failed) {
     return (
-      <span className="block rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500 ring-1 ring-slate-200">
+      <span className="block rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600 ring-1 ring-slate-200">
         Imagem indisponível na fonte.
       </span>
     )

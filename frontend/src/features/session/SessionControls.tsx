@@ -122,7 +122,7 @@ export function FinishControls({
       <button
         type="button"
         onClick={onAsk}
-        className="min-h-[44px] text-sm font-medium text-slate-500 underline-offset-2 hover:underline
+        className="min-h-[44px] text-sm font-medium text-slate-600 underline-offset-2 hover:underline
           focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
       >
         Encerrar sessão

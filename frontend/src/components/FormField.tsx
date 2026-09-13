@@ -29,7 +29,7 @@ export const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
             ref={ref}
             aria-invalid={error ? true : undefined}
             aria-describedby={errorId ?? hintId}
-            className={`min-h-[44px] w-full rounded-xl border border-slate-300 bg-white px-3 text-base
+            className={`min-h-[44px] w-full rounded-xl border border-slate-500/80 bg-white px-3 text-base
               focus-visible:border-indigo-500 focus-visible:outline-2 focus-visible:outline-indigo-500
               aria-[invalid=true]:border-red-500 ${action ? 'pr-24' : ''}`}
             {...props}
@@ -42,7 +42,7 @@ export const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
           </p>
         )}
         {error && (
-          <p id={errorId} role="alert" className="text-sm text-red-600">
+          <p id={errorId} role="alert" className="text-sm text-red-700">
             {error}
           </p>
         )}

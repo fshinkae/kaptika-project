@@ -43,7 +43,7 @@ export function AreaSelect({
       </ul>
 
       {error != null && (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-red-700">
           {startErrorMessage(error)}
         </p>
       )}

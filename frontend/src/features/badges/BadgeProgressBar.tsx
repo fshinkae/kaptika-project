@@ -11,7 +11,7 @@ export function BadgeProgressBar({ progress, label }: { progress: BadgeProgress;
 
   return (
     <div className="mt-3 w-full">
-      <div className="mb-1 flex items-center justify-between text-xs text-slate-500">
+      <div className="mb-1 flex items-center justify-between text-xs text-slate-600">
         <span>Progresso</span>
         <span className="font-medium text-slate-700">
           {current} de {target}

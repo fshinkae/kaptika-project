@@ -85,7 +85,7 @@ function ProfileView({
 function Stat({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="rounded-xl bg-white p-4 text-center ring-1 ring-slate-100">
-      <dt className="text-xs uppercase tracking-wide text-slate-500">{label}</dt>
+      <dt className="text-xs uppercase tracking-wide text-slate-600">{label}</dt>
       <dd className="mt-1 text-lg font-semibold text-slate-800">{value}</dd>
     </div>
   )
@@ -144,7 +144,7 @@ function ProfileEditForm({
         {...register('avatarUrl')}
       />
       {formError && (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-red-700">
           {formError}
         </p>
       )}

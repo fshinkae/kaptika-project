@@ -73,7 +73,7 @@ function StreakHero({ current, metToday }: { current: number; metToday: boolean 
       <span className="text-5xl font-bold tabular-nums text-amber-600">{current}</span>
       <span className="text-sm font-medium text-slate-600">{label}</span>
       {metToday && current > 0 && (
-        <span className="mt-1 text-xs text-slate-500">Ofensiva mantida hoje!</span>
+        <span className="mt-1 text-xs text-slate-600">Ofensiva mantida hoje!</span>
       )}
     </div>
   )
@@ -122,7 +122,7 @@ function BreakBanner({ brokenAt }: { brokenAt: string | null }) {
       <p className="text-sm text-slate-600">
         Tudo bem — recomeços fazem parte. Que tal retomar hoje?
       </p>
-      {brokenAt && <p className="text-xs text-slate-500">Última sequência até {formatDate(brokenAt)}.</p>}
+      {brokenAt && <p className="text-xs text-slate-600">Última sequência até {formatDate(brokenAt)}.</p>}
     </div>
   )
 }

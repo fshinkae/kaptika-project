@@ -201,7 +201,7 @@ function AreaConflict({
       </div>
 
       {error != null && (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-red-700">
           Não foi possível trocar de área. Tente novamente.
         </p>
       )}
@@ -312,7 +312,7 @@ function ActiveSession({
             }
           />
           {answerMutation.isError && !feedback && (
-            <p role="alert" className="text-sm text-red-600">
+            <p role="alert" className="text-sm text-red-700">
               {answerErrorMessage(answerMutation.error)}
             </p>
           )}
@@ -338,7 +338,7 @@ function ActiveSession({
       />
 
       {finishMutation.isError && (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-red-700">
           Não foi possível encerrar a sessão. Tente novamente.
         </p>
       )}

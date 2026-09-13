@@ -28,7 +28,7 @@ export function LeaderboardRow({
     >
       <span
         aria-label={`Posição ${entry.rank}`}
-        className="w-9 shrink-0 text-center text-sm font-semibold tabular-nums text-slate-500"
+        className="w-9 shrink-0 text-center text-sm font-semibold tabular-nums text-slate-600"
       >
         {entry.rank}
       </span>

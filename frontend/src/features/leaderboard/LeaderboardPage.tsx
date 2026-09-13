@@ -63,7 +63,7 @@ export function LeaderboardPage() {
               </ol>
 
               {isFetchNextPageError && (
-                <p role="alert" className="text-center text-sm text-red-600">
+                <p role="alert" className="text-center text-sm text-red-700">
                   Não foi possível carregar mais itens.
                 </p>
               )}
