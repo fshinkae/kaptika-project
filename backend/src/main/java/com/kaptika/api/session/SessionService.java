@@ -43,7 +43,7 @@ public class SessionService {
     public record CreationOutcome(SessionResponse session, boolean created) {
     }
 
-    private static final int TARGET_QUESTIONS = 20;
+    private static final int TARGET_QUESTIONS = 5;
     private static final Duration ACTIVE_SESSION_TTL = Duration.ofHours(24);
 
     private final StudySessionRepository sessions;

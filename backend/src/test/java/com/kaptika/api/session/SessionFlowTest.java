@@ -40,7 +40,7 @@ class SessionFlowTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("ciclo completo: criar (máx. 20, sem gabarito) → responder → encerrar com resumo")
+    @DisplayName("ciclo completo: criar (máx. 5, sem gabarito) → responder → encerrar com resumo")
     void fullLifecycle() throws Exception {
         String token = TestTokens.valid(UUID.randomUUID());
 
@@ -50,7 +50,7 @@ class SessionFlowTest extends IntegrationTest {
                         .content("{\"area\":\"linguagens\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.status").value("ACTIVE"))
-                .andExpect(jsonPath("$.totalQuestions").value(20)) // SC-001
+                .andExpect(jsonPath("$.totalQuestions").value(5)) // SC-001
                 .andExpect(jsonPath("$.answeredCount").value(0))
                 .andExpect(jsonPath("$.nextQuestionId").isNotEmpty())
                 .andReturn();
@@ -100,7 +100,7 @@ class SessionFlowTest extends IntegrationTest {
                 .andExpect(jsonPath("$.status").value("COMPLETED"))
                 .andExpect(jsonPath("$.correctCount").value(1))
                 .andExpect(jsonPath("$.wrongCount").value(1))
-                .andExpect(jsonPath("$.totalQuestions").value(20))
+                .andExpect(jsonPath("$.totalQuestions").value(5))
                 .andExpect(jsonPath("$.answeredCount").value(2));
         assertThat(probe.completedSessions).hasSize(1);
 
@@ -245,7 +245,7 @@ class SessionFlowTest extends IntegrationTest {
     @DisplayName("não-repetição: questão acertada não volta na próxima sessão (30 dias)")
     void nonRepetitionOfCorrectAnswers() throws Exception {
         String token = TestTokens.valid(UUID.randomUUID());
-        // acervo de ciencias-humanas: 21 questões; sessão 1 usa 20
+        // acervo de ciencias-humanas: 21 questões; sessão 1 usa 5
         Created s1 = createSession(token, "ciencias-humanas");
         mockMvc.perform(post("/sessions/" + s1.sessionId + "/answers")
                         .header("Authorization", "Bearer " + token)

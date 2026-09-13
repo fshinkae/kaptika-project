@@ -94,7 +94,7 @@ A API expõe, de forma eficiente, o XP total por estudante (e o XP por período,
 
 - **FR-010**: A API DEVE persistir concessões de XP como trilha de auditoria (origem, valor, instante, chave) em PostgreSQL.
 
-- **FR-011**: **Decidido**: não há teto diário de XP no MVP — o limite de 20 questões por sessão já contém o farming. O teto fica reservado como configuração futura e, se ativado, não pode quebrar a idempotência.
+- **FR-011**: **Decidido**: não há teto diário de XP no MVP — o limite de 5 questões por sessão já contém o farming. O teto fica reservado como configuração futura e, se ativado, não pode quebrar a idempotência.
 
 ### Key Entities & Contratos
 
