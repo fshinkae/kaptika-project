@@ -62,7 +62,7 @@ Marcações [NEEDS CLARIFICATION: ...] sinalizam decisões pendentes antes da fa
 
 - **Área de conhecimento (ENEM):** Linguagens; Ciências Humanas; Ciências da Natureza; Matemática (e suas Tecnologias).
 
-- **Sessão:** rodada curta com **no máximo 20 questões**.
+- **Sessão:** rodada curta com **no máximo 5 questões**.
 
 - **XP:** pontos ganhos ao acertar. **Streak (ofensiva):** dias consecutivos de meta cumprida. **Badge (medalha):** marco conquistado. **Leaderboard (placar):** ranking por XP.
 

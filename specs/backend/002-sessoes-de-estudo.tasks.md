@@ -53,7 +53,7 @@ Suíte: **34 testes, 0 falhas** (`./mvnw verify`). Cobertura JaCoCo: **90,5% de 
 
 | SC | Resultado | Evidência |
 |---|---|---|
-| SC-001 | ✅ | `fullLifecycle`: sessão criada com exatamente 20 questões (alvo respeitado) |
+| SC-001 | ✅ | `fullLifecycle`: sessão criada com exatamente 5 questões (alvo respeitado) |
 | SC-002 | ✅ | `answerIdempotency`: reenvio → mesmo resultado, contagem inalterada; unique (session, question) no banco |
 | SC-003 | ✅ | `EventProbe`: 1 evento por acerto e por conclusão, mesmo com reenvio/finish repetido |
 | SC-004 | ✅* | Correção server-side sem chamada externa no caminho da resposta; p95 real em staging |

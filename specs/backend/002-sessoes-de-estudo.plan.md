@@ -47,7 +47,7 @@ Ciclo de vida transacional da sessão (criar → responder → encerrar) com que
 
 | Requisito (FR) | Como é atendido |
 |:---|:---|
-| FR-001/002 | POST /sessions por área; alvo = min(20, acervo) |
+| FR-001/002 | POST /sessions por área; alvo = min(5, acervo) |
 | FR-003 | `EnemDevClient` normaliza para `questions` + alternativas |
 | FR-004/SC-006 | DTOs de sessão/questão não contêm `correct_alternative`; gabarito só no resultado da resposta |
 | FR-005 | POST answers grava e devolve correta/gabarito |

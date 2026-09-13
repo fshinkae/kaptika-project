@@ -28,7 +28,7 @@ O estudante escolhe uma área, vê uma questão por vez com suas alternativas, s
 
 2.  **Given** uma questão, **When** seleciona uma alternativa e confirma, **Then** a UI mostra imediatamente acerto/erro e a alternativa correta.
 
-3.  **Given** uma resposta confirmada, **When** avança, **Then** vê a próxima questão e um indicador de progresso (ex.: 3/20).
+3.  **Given** uma resposta confirmada, **When** avança, **Then** vê a próxima questão e um indicador de progresso (ex.: 3/5).
 
 4.  **Given** a última questão, **When** conclui, **Then** vê o resumo com acertos, erros e total.
 

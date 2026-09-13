@@ -10,13 +10,13 @@
 
 **Contraparte**: [frontend/002-sessoes-de-estudo.md](../frontend/002-sessoes-de-estudo.md)
 
-**Input**: O backend orquestra o ciclo de vida da sessão de microlearning: cria a sessão por área, obtém questões da fonte externa **enem.dev**, registra respostas com feedback de acerto/erro, aplica o limite de 20 questões, gera o resumo e emite eventos de domínio que alimentam XP (003), Ofensiva (004) e Medalhas (005).
+**Input**: O backend orquestra o ciclo de vida da sessão de microlearning: cria a sessão por área, obtém questões da fonte externa **enem.dev**, registra respostas com feedback de acerto/erro, aplica o limite de 5 questões, gera o resumo e emite eventos de domínio que alimentam XP (003), Ofensiva (004) e Medalhas (005).
 
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Ciclo de vida da sessão e correção de respostas (Priority: P1)
 
-O cliente inicia uma sessão informando a área; a API monta a sessão com até 20 questões da fonte externa. A cada resposta enviada, a API determina acerto/erro, persiste o resultado e devolve o gabarito. Ao fim, a API fecha a sessão e retorna o resumo (acertos, erros, total).
+O cliente inicia uma sessão informando a área; a API monta a sessão com até 5 questões da fonte externa. A cada resposta enviada, a API determina acerto/erro, persiste o resultado e devolve o gabarito. Ao fim, a API fecha a sessão e retorna o resumo (acertos, erros, total).
 
 **Why this priority**: É o núcleo transacional do produto; todas as demais features derivam dos eventos gerados aqui.
 
@@ -30,7 +30,7 @@ O cliente inicia uma sessão informando a área; a API monta a sessão com até 
 
 3.  **Given** a última questão respondida ou pedido de encerramento, **When** a sessão é fechada, **Then** a API retorna o resumo com acertos, erros e total.
 
-4.  **Given** uma sessão, **When** ela é montada, **Then** contém no máximo 20 questões.
+4.  **Given** uma sessão, **When** ela é montada, **Then** contém no máximo 5 questões.
 
 ### User Story 2 - Idempotência, retomada e integridade (Priority: P1)
 
@@ -86,7 +86,7 @@ Quando a enem.dev está indisponível, lenta ou retorna dados inconsistentes, a 
 
 - **FR-001**: A API DEVE permitir criar uma sessão de um estudante autenticado para uma área de conhecimento do ENEM.
 
-- **FR-002**: A API DEVE limitar cada sessão a no máximo 20 questões.
+- **FR-002**: A API DEVE limitar cada sessão a no máximo 5 questões. **Decidido (2026-09-13)**: reduzido de 20 para 5 — 20 questões do ENEM levam ~60 min, longe de microlearning, e a meta da ofensiva exige concluir a sessão.
 
 - **FR-003**: A API DEVE obter questões da fonte externa enem.dev e normalizá-las para um formato interno (enunciado, alternativas, gabarito, área, origem).
 
@@ -130,7 +130,7 @@ Quando a enem.dev está indisponível, lenta ou retorna dados inconsistentes, a 
 
 ### Measurable Outcomes
 
-- **SC-001**: 100% das sessões respeitam o limite de 20 questões.
+- **SC-001**: 100% das sessões respeitam o limite de 5 questões.
 
 - **SC-002**: 0 respostas contabilizadas em duplicidade sob reenvio/reconexão.
 
