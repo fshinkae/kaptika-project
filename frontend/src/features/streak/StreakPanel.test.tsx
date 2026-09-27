@@ -41,7 +41,7 @@ describe('StreakPanel', () => {
 
   it('usa singular para 1 dia (COPY-1)', async () => {
     authenticate()
-    mockStreak({ current: 1, record: 1 })
+    mockStreak({ current: 1, record: 1, metToday: true })
     renderWithProviders(<StreakPanel />)
 
     expect(await screen.findByText('1 dia')).toBeInTheDocument()
@@ -52,7 +52,7 @@ describe('StreakPanel', () => {
     mockStreak({ metToday: true })
     renderWithProviders(<StreakPanel />)
 
-    expect(await screen.findByText('Meta cumprida hoje')).toBeInTheDocument()
+    expect(await screen.findByText('Feito hoje. Volte amanhã para manter.')).toBeInTheDocument()
   })
 
   it('não mostra o badge de meta quando metToday é false (FR-002)', async () => {
@@ -61,7 +61,29 @@ describe('StreakPanel', () => {
     renderWithProviders(<StreakPanel />)
 
     expect(await screen.findByText('7')).toBeInTheDocument()
-    expect(screen.queryByText('Meta cumprida hoje')).not.toBeInTheDocument()
+    expect(screen.queryByText('Feito hoje. Volte amanhã para manter.')).not.toBeInTheDocument()
+  })
+
+  it('avisa o que está em jogo quando falta a sessão de hoje (STK-1)', async () => {
+    authenticate()
+    mockStreak({ current: 7, metToday: false })
+    renderWithProviders(<StreakPanel showAction />)
+
+    expect(await screen.findByText(/Falta a sessão de hoje para manter seus/)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Fazer a sessão de hoje' })).toHaveAttribute(
+      'href',
+      '/estudar',
+    )
+  })
+
+  it('não oferece estudar quando a sessão de hoje já foi feita (STK-1)', async () => {
+    authenticate()
+    mockStreak({ metToday: true })
+    renderWithProviders(<StreakPanel showAction />)
+
+    expect(await screen.findByText('Feito hoje. Volte amanhã para manter.')).toBeInTheDocument()
+    expect(screen.queryByRole('link')).not.toBeInTheDocument()
+    expect(screen.queryByText(/Falta a sessão de hoje/)).not.toBeInTheDocument()
   })
 
   it('comunica a quebra de forma empática com a data reportada (FR-004/009)', async () => {

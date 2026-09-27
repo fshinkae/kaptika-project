@@ -8,7 +8,7 @@ import { StreakPanel } from './StreakPanel'
 export function StreakPage() {
   return (
     <main className="mx-auto w-full max-w-md px-5 py-8">
-      <StreakPanel />
+      <StreakPanel showAction />
     </main>
   )
 }

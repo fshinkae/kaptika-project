@@ -17,6 +17,8 @@ export function HomePage() {
   // convite fala da primeira sessão. Mesmo cache do painel, sem requisição extra.
   const streak = useQuery({ queryKey: ['streak'], queryFn: getStreak })
   const firstTime = streak.data?.record === 0
+  // Ofensiva em curso e sessão de hoje por fazer (STK-1): o botão diz o que está em jogo.
+  const pendingToday = streak.data != null && streak.data.current > 0 && !streak.data.metToday
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-col gap-5 px-5 pt-8 pb-12">
@@ -31,7 +33,11 @@ export function HomePage() {
       </header>
 
       <Link to="/estudar" className={buttonClassName('primary', '', 'lg')}>
-        {firstTime ? 'Começar primeira sessão' : 'Iniciar sessão de estudo'}
+        {firstTime
+          ? 'Começar primeira sessão'
+          : pendingToday
+            ? 'Fazer a sessão de hoje'
+            : 'Iniciar sessão de estudo'}
       </Link>
 
       <XpPanel />
