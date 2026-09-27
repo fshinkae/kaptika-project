@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button } from '../../components/Button'
-import { EmptyState } from '../../components/EmptyState'
+import { EmptyState, START_SESSION_ACTION } from '../../components/EmptyState'
 import { ErrorState } from '../../components/ErrorState'
 import { LoadingState } from '../../components/LoadingState'
 import type { Scope } from './leaderboardApi'
@@ -49,7 +49,9 @@ export function LeaderboardPage() {
           {me && !meInPage && <MyPositionCard me={me} />}
 
           {entries.length === 0 ? (
-            <EmptyState>Ainda não há estudantes no placar. Comece a estudar para aparecer aqui!</EmptyState>
+            <EmptyState action={START_SESSION_ACTION}>
+              Ainda não há estudantes no placar. Conclua uma sessão para aparecer aqui.
+            </EmptyState>
           ) : (
             <>
               <ol className="flex flex-col gap-2">

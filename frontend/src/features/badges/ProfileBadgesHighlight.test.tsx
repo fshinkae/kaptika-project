@@ -57,6 +57,8 @@ describe('ProfileBadgesHighlight', () => {
     )
     renderWithProviders(<ProfileBadgesHighlight />)
 
-    expect(await screen.findByText(/conquistar a primeira/i)).toBeInTheDocument()
+    expect(await screen.findByText(/A primeira vem ao concluir uma sessão/)).toBeInTheDocument()
+    // VAZ-1: o vazio aponta o próximo passo
+    expect(screen.getByRole('link', { name: 'Começar uma sessão' })).toHaveAttribute('href', '/estudar')
   })
 })
