@@ -8,6 +8,7 @@ import { EmptyState } from '../../components/EmptyState'
 import { ErrorState } from '../../components/ErrorState'
 import { CloseIcon } from '../../components/Icons'
 import { LoadingState } from '../../components/LoadingState'
+import { PageHeader } from '../../components/PageHeader'
 import { AreaSelect } from './AreaSelect'
 import { QuestionCard } from './QuestionCard'
 import {
@@ -183,13 +184,15 @@ function AreaConflict({
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-col gap-6 px-5 py-8">
-      <header className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold text-ink">Você tem uma sessão em andamento</h1>
-        <p className="text-ink-muted">
-          Ela é de <strong>{activeLabel}</strong> ({active.answeredCount} de {active.totalQuestions}{' '}
-          respondidas). Só é possível ter uma sessão por vez.
-        </p>
-      </header>
+      <PageHeader
+        title="Você tem uma sessão em andamento"
+        subtitle={
+          <>
+            Ela é de <strong>{activeLabel}</strong> ({active.answeredCount} de{' '}
+            {active.totalQuestions} respondidas). Só é possível ter uma sessão por vez.
+          </>
+        }
+      />
 
       <div className="flex flex-col gap-3">
         <Button onClick={onResume} disabled={isSwitching}>

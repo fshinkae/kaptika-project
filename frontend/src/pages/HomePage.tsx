@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { buttonClassName } from '../components/Button'
 import { MedalIcon, RankIcon } from '../components/Icons'
 import { LogoMark } from '../components/Logo'
+import { PageHeader } from '../components/PageHeader'
 import { XpPanel } from '../features/xp'
 import { StreakPanel, getStreak } from '../features/streak'
 
@@ -22,15 +23,15 @@ export function HomePage() {
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-col gap-5 px-5 pt-8 pb-12">
-      <header>
-        <LogoMark className="h-8 w-8" />
-        <h1 className="mt-5 text-3xl font-extrabold text-ink">Bora estudar?</h1>
-        <p className="mt-1 text-ink-muted">
-          {firstTime
+      <PageHeader
+        above={<LogoMark className="h-8 w-8" />}
+        title="Bora estudar?"
+        subtitle={
+          firstTime
             ? 'Escolha uma área, responda e veja o gabarito na hora.'
-            : 'Sessões curtas de ENEM, no seu ritmo.'}
-        </p>
-      </header>
+            : 'Sessões curtas de ENEM, no seu ritmo.'
+        }
+      />
 
       <Link to="/estudar" className={buttonClassName('primary', '', 'lg')}>
         {firstTime

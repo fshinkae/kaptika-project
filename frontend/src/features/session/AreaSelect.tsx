@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ApiError } from '../../lib/apiClient'
 import { Button } from '../../components/Button'
+import { PageHeader } from '../../components/PageHeader'
 import { AREAS, type AreaSlug } from './sessionApi'
 
 /** Depois disso a espera deixa de ser "normal" e o estudante merece saber por quê. */
@@ -27,10 +28,7 @@ export function AreaSelect({
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-col gap-6 px-5 py-8">
-      <header className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold text-ink">Escolha uma área</h1>
-        <p className="text-ink-muted">Responda uma sessão curta e ganhe XP.</p>
-      </header>
+      <PageHeader title="Escolha uma área" subtitle="Responda uma sessão curta e ganhe XP." />
 
       <ul className="flex flex-col gap-3">
         {AREAS.map((area) => (

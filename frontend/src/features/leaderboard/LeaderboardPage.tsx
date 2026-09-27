@@ -3,6 +3,7 @@ import { Button } from '../../components/Button'
 import { EmptyState, START_SESSION_ACTION } from '../../components/EmptyState'
 import { ErrorState } from '../../components/ErrorState'
 import { LoadingState } from '../../components/LoadingState'
+import { PageHeader } from '../../components/PageHeader'
 import type { Scope } from './leaderboardApi'
 import { LeaderboardRow } from './LeaderboardRow'
 import { MyPositionCard } from './MyPositionCard'
@@ -38,7 +39,7 @@ export function LeaderboardPage() {
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-col gap-4 px-5 py-8">
-      <h1 className="text-2xl font-bold text-ink">Placar de líderes</h1>
+      <PageHeader title="Placar de líderes" />
 
       <ScopeTabs scope={scope} onChange={setScope} />
 

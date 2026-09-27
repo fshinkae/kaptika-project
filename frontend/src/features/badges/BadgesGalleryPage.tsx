@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { EmptyState } from '../../components/EmptyState'
 import { ErrorState } from '../../components/ErrorState'
 import { LoadingState } from '../../components/LoadingState'
+import { PageHeader } from '../../components/PageHeader'
 import { getBadges } from './badgesApi'
 import { BadgesGallery } from './BadgesGallery'
 
@@ -15,7 +16,7 @@ export function BadgesGalleryPage() {
 
   return (
     <main className="mx-auto w-full max-w-2xl px-5 py-8">
-      <h1 className="mb-6 text-2xl font-bold text-ink">Medalhas</h1>
+      <PageHeader title="Medalhas" className="mb-6" />
 
       {query.isPending ? (
         <LoadingState label="Carregando medalhas…" />

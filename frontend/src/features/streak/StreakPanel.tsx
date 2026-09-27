@@ -15,7 +15,14 @@ import { getStreak, type StreakState } from './streakApi'
  * `showAction`: oferece o botão de estudar. Na tela inicial o botão principal
  * já existe acima do painel; na tela da ofensiva, é o painel que o oferece.
  */
-export function StreakPanel({ showAction = false }: { showAction?: boolean }) {
+export function StreakPanel({
+  showAction = false,
+  showHeading = true,
+}: {
+  showAction?: boolean
+  /** Na tela da ofensiva o título já é o h1 da página. */
+  showHeading?: boolean
+}) {
   const query = useQuery({ queryKey: ['streak'], queryFn: getStreak })
 
   if (query.isPending) return <Skeleton label="Carregando sua ofensiva…" className="h-40" />
@@ -29,10 +36,18 @@ export function StreakPanel({ showAction = false }: { showAction?: boolean }) {
     )
   }
 
-  return <StreakView streak={query.data} showAction={showAction} />
+  return <StreakView streak={query.data} showAction={showAction} showHeading={showHeading} />
 }
 
-function StreakView({ streak, showAction }: { streak: StreakState; showAction: boolean }) {
+function StreakView({
+  streak,
+  showAction,
+  showHeading,
+}: {
+  streak: StreakState
+  showAction: boolean
+  showHeading: boolean
+}) {
   const { current, record, freezes, metToday, brokenSinceLastAccess, brokenAt } = streak
   // A quebra tem prioridade sobre o convite inicial: mesmo com current 0,
   // se houve quebra desde o último acesso, comunicamos e incentivamos.
@@ -43,10 +58,16 @@ function StreakView({ streak, showAction }: { streak: StreakState; showAction: b
   const pendingToday = current > 0 && !metToday
 
   return (
-    <section aria-labelledby="streak-heading" className="flex flex-col gap-5">
-      <h2 id="streak-heading" className="font-display text-lg font-bold text-ink">
-        Ofensiva diária
-      </h2>
+    <section
+      aria-labelledby={showHeading ? 'streak-heading' : undefined}
+      aria-label={showHeading ? undefined : 'Sua ofensiva'}
+      className="flex flex-col gap-5"
+    >
+      {showHeading && (
+        <h2 id="streak-heading" className="font-display text-lg font-bold text-ink">
+          Ofensiva diária
+        </h2>
+      )}
 
       {brokenSinceLastAccess && <BreakBanner brokenAt={brokenAt} />}
 

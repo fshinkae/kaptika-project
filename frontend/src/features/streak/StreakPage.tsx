@@ -1,3 +1,4 @@
+import { PageHeader } from '../../components/PageHeader'
 import { StreakPanel } from './StreakPanel'
 
 /**
@@ -7,8 +8,12 @@ import { StreakPanel } from './StreakPanel'
  */
 export function StreakPage() {
   return (
-    <main className="mx-auto w-full max-w-md px-5 py-8">
-      <StreakPanel showAction />
+    <main className="mx-auto flex w-full max-w-md flex-col gap-6 px-5 py-8">
+      <PageHeader
+        title="Ofensiva diária"
+        subtitle="Uma sessão por dia faz a sequência crescer."
+      />
+      <StreakPanel showAction showHeading={false} />
     </main>
   )
 }
