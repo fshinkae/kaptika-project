@@ -79,6 +79,45 @@ describe('LeaderboardPage', () => {
     expect(within(card).getByText('42 XP')).toBeInTheDocument()
   })
 
+  it('mostra o total de estudantes junto da posição própria (PLC-1)', async () => {
+    authenticate()
+    server.use(
+      http.get(`${API}/leaderboard`, () =>
+        HttpResponse.json(
+          page({ totalStudents: 100, entries: [entry(1, 'Ana', 900)], me: { rank: 87, xp: 42 } }),
+        ),
+      ),
+    )
+    renderWithProviders(<LeaderboardPage />)
+
+    const card = await screen.findByRole('region', { name: 'Sua posição' })
+    expect(within(card).getByText(/de 100/)).toBeInTheDocument()
+  })
+
+  it('sem XP, convida a entrar no placar em vez de mostrar o último lugar (PLC-1)', async () => {
+    authenticate()
+    server.use(
+      http.get(`${API}/leaderboard`, () =>
+        HttpResponse.json(
+          page({
+            totalStudents: 37,
+            entries: [entry(1, 'Ana', 900), entry(2, 'Bruno', 500)],
+            me: { rank: 37, xp: 0 },
+          }),
+        ),
+      ),
+    )
+    renderWithProviders(<LeaderboardPage />)
+
+    const card = await screen.findByRole('region', { name: 'Sua posição' })
+    expect(within(card).getByText('Você ainda não está no placar')).toBeInTheDocument()
+    expect(within(card).queryByText('#37')).not.toBeInTheDocument()
+    expect(within(card).getByRole('link', { name: 'Começar uma sessão' })).toHaveAttribute(
+      'href',
+      '/estudar',
+    )
+  })
+
   it('não repete a posição própria quando ela já está na lista (DUP-1)', async () => {
     authenticate()
     server.use(

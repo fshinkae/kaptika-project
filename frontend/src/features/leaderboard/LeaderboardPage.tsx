@@ -20,6 +20,7 @@ export function LeaderboardPage() {
   const {
     entries,
     me,
+    totalStudents,
     isPending,
     isError,
     refetch,
@@ -29,8 +30,11 @@ export function LeaderboardPage() {
     isFetchNextPageError,
   } = useLeaderboard(scope)
   // O cartão "Sua posição" só existe para quem está fora da página carregada;
-  // dentro dela, a própria linha já tem realce (DUP-1).
+  // dentro dela, a própria linha já tem realce (DUP-1). Sem XP, o cartão
+  // aparece sempre: é ele que convida a entrar no placar (PLC-1). Com o placar
+  // vazio, quem convida é o estado vazio.
   const meInPage = me != null && entries.some((entry) => entry.rank === me.rank)
+  const showMyPosition = me != null && entries.length > 0 && (!meInPage || me.xp === 0)
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-col gap-4 px-5 py-8">
@@ -46,7 +50,9 @@ export function LeaderboardPage() {
         <ErrorState onRetry={() => refetch()} />
       ) : (
         <>
-          {me && !meInPage && <MyPositionCard me={me} />}
+          {me && showMyPosition && (
+            <MyPositionCard me={me} scope={scope} totalStudents={totalStudents} />
+          )}
 
           {entries.length === 0 ? (
             <EmptyState action={START_SESSION_ACTION}>
