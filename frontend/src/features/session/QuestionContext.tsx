@@ -23,10 +23,13 @@ const COMPONENTS: Components = {
  * as imagens embutidas na posição em que aparecem na prova —, então renderizar
  * como texto puro mostraria `**` e `![](url)` crus. Só markdown: nenhum HTML
  * da fonte é interpretado.
+ *
+ * No ENEM a leitura do texto-base é metade da questão (SES-9): tinta cheia, em
+ * 16px, num cartão que o separa do enunciado.
  */
 export function QuestionContext({ markdown }: { markdown: string }) {
   return (
-    <div className="flex flex-col gap-3 text-sm leading-relaxed text-ink-muted">
+    <div className="flex flex-col gap-3 rounded-card bg-surface p-4 text-base leading-relaxed text-ink ring-1 ring-line">
       <Markdown components={COMPONENTS}>{markdown}</Markdown>
     </div>
   )

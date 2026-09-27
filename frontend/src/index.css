@@ -76,13 +76,17 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Títulos de página na fonte de display, sem palavra órfã. */
-h1 {
-  font-family: var(--font-display);
-}
+/* Títulos de página na fonte de display, sem palavra órfã. Na camada base
+   para que as utilitárias do Tailwind possam sobrescrever (ex.: text-pretty
+   no enunciado, que é um h2 longo). */
+@layer base {
+  h1 {
+    font-family: var(--font-display);
+  }
 
-h1,
-h2 {
-  text-wrap: balance;
-  letter-spacing: -0.015em;
+  h1,
+  h2 {
+    text-wrap: balance;
+    letter-spacing: -0.015em;
+  }
 }

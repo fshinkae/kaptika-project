@@ -48,7 +48,7 @@ export function QuestionCard({
         id="question-statement"
         ref={headingRef}
         tabIndex={-1}
-        className="whitespace-pre-wrap text-base font-semibold leading-relaxed text-ink focus:outline-none"
+        className="whitespace-pre-wrap text-base font-medium leading-relaxed text-pretty text-ink focus:outline-none"
       >
         {question.statement}
       </h2>
