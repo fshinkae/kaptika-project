@@ -283,6 +283,7 @@ function ActiveSession({
         <SessionProgress
           current={current?.position ?? session.answeredCount}
           total={session.totalQuestions}
+          results={answerResults(session, feedback)}
         />
       </header>
 
@@ -344,6 +345,18 @@ function ActiveSession({
       )}
     </main>
   )
+}
+
+/**
+ * Acerto/erro por posição, na ordem das bolinhas (SES-10): as respostas já
+ * registradas vêm da sessão; a que acabou de ser corrigida, do feedback.
+ */
+function answerResults(session: SessionResponse, feedback: AnswerResult | null): (boolean | null)[] {
+  const byQuestion = new Map(session.answers.map((a) => [a.questionId, a.correct]))
+  if (feedback) byQuestion.set(feedback.questionId, feedback.correct)
+  return [...session.questions]
+    .sort((a, b) => a.position - b.position)
+    .map((q) => byQuestion.get(q.questionId) ?? null)
 }
 
 function answerErrorMessage(error: unknown): string {
