@@ -275,8 +275,8 @@ function ActiveSession({
         <button
           type="button"
           onClick={() => navigate('/')}
-          aria-label="Sair da sessão"
-          title="Sair (o progresso fica salvo)"
+          aria-label="Sair e continuar depois"
+          title="Sair e continuar depois (o progresso fica salvo)"
           className="-ml-3 flex h-11 w-11 shrink-0 items-center justify-center rounded-control text-ink-muted
             transition hover:bg-paper
             focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pen-600"
@@ -333,13 +333,17 @@ function ActiveSession({
         </EmptyState>
       )}
 
-      <FinishControls
-        confirming={confirmingFinish}
-        isFinishing={finishMutation.isPending}
-        onAsk={() => setConfirmingFinish(true)}
-        onCancel={() => setConfirmingFinish(false)}
-        onConfirm={() => finishMutation.mutate()}
-      />
+      {/* Depois da última resposta a sessão já acabou: o próximo passo é o
+          resumo, e "encerrar" viraria uma segunda saída para o mesmo lugar (SES-8). */}
+      {current && (!feedback || feedback.sessionStatus === 'ACTIVE') && (
+        <FinishControls
+          confirming={confirmingFinish}
+          isFinishing={finishMutation.isPending}
+          onAsk={() => setConfirmingFinish(true)}
+          onCancel={() => setConfirmingFinish(false)}
+          onConfirm={() => finishMutation.mutate()}
+        />
+      )}
 
       {finishMutation.isError && (
         <p role="alert" className="text-sm text-danger">

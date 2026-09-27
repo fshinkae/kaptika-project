@@ -305,7 +305,7 @@ describe('SessionFlowPage', () => {
     renderWithProviders(<SessionFlowPage />)
 
     await user.click(await screen.findByRole('button', { name: 'Matemática' }))
-    await user.click(await screen.findByRole('button', { name: 'Encerrar sessão' }))
+    await user.click(await screen.findByRole('button', { name: 'Encerrar e ver resumo' }))
     await user.click(screen.getByRole('button', { name: 'Encerrar' }))
 
     expect(await screen.findByRole('heading', { name: 'Sessão concluída' })).toBeInTheDocument()
@@ -356,7 +356,10 @@ describe('SessionFlowPage', () => {
     await user.click(await screen.findByRole('button', { name: 'Matemática' }))
     await user.click(await screen.findByRole('radio', { name: /Alt A 1/ }))
     await user.click(screen.getByRole('button', { name: 'Confirmar' }))
-    await user.click(await screen.findByRole('button', { name: 'Ver resumo' }))
+    const toSummary = await screen.findByRole('button', { name: 'Ver resumo' })
+    // SES-8: com a sessão concluída, "encerrar" seria uma segunda saída para o resumo
+    expect(screen.queryByRole('button', { name: 'Encerrar e ver resumo' })).not.toBeInTheDocument()
+    await user.click(toSummary)
 
     expect(await screen.findByRole('heading', { name: 'Sessão concluída' })).toBeInTheDocument()
   })
