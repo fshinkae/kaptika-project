@@ -12,6 +12,7 @@ import { Button } from '../components/Button'
 import { ErrorState } from '../components/ErrorState'
 import { FormField } from '../components/FormField'
 import { LoadingState } from '../components/LoadingState'
+import { PageHeader } from '../components/PageHeader'
 import { formatDays } from '../lib/format'
 
 const editSchema = z.object({
@@ -134,7 +135,7 @@ function ProfileEditForm({
       })}
       className="flex flex-col gap-4"
     >
-      <h1 className="text-lg font-semibold text-ink">Editar perfil</h1>
+      <PageHeader title="Editar perfil" />
       <FormField label="Nome de exibição" error={errors.displayName?.message} {...register('displayName')} />
       <FormField
         label="URL do avatar"

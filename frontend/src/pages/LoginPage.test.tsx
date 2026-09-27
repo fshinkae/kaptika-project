@@ -50,4 +50,26 @@ describe('LoginPage', () => {
     // não vaza se o e-mail existe
     expect(screen.queryByText(/Invalid login/i)).not.toBeInTheDocument()
   })
+
+  it('e-mail não confirmado explica o motivo e deixa reenviar o link (CONF-1)', async () => {
+    const user = userEvent.setup()
+    authMock.signInWithPassword.mockResolvedValueOnce({
+      data: { session: null },
+      error: { message: 'Email not confirmed', code: 'email_not_confirmed' },
+    })
+    renderWithProviders(<LoginPage />)
+
+    await user.type(screen.getByLabelText('E-mail'), 'nova@enem.br')
+    await user.type(screen.getByLabelText('Senha'), 'senha123')
+    await user.click(screen.getByRole('button', { name: 'Entrar' }))
+
+    expect(await screen.findByText('Falta confirmar seu e-mail.')).toBeInTheDocument()
+    expect(screen.queryByText('E-mail ou senha incorretos.')).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Reenviar e-mail' }))
+    expect(await screen.findByText('E-mail reenviado.')).toBeInTheDocument()
+    expect(authMock.resend).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'signup', email: 'nova@enem.br' }),
+    )
+  })
 })

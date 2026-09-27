@@ -1,3 +1,4 @@
+import { formatInt } from '../../lib/format'
 import type { BadgeProgress } from './badgesApi'
 
 /**
@@ -13,8 +14,8 @@ export function BadgeProgressBar({ progress, label }: { progress: BadgeProgress;
     <div className="mt-3 w-full">
       <div className="mb-1 flex items-center justify-between text-xs text-ink-muted">
         <span>Progresso</span>
-        <span className="font-medium text-ink">
-          {current} de {target}
+        <span className="font-medium tabular-nums text-ink">
+          {formatInt(current)} de {formatInt(target)}
         </span>
       </div>
       <div
@@ -22,7 +23,7 @@ export function BadgeProgressBar({ progress, label }: { progress: BadgeProgress;
         aria-valuenow={current}
         aria-valuemin={0}
         aria-valuemax={target}
-        aria-label={`${label}: ${current} de ${target}`}
+        aria-label={`${label}: ${formatInt(current)} de ${formatInt(target)}`}
         className="h-2 w-full overflow-hidden rounded-full bg-line"
       >
         <div

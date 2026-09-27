@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { EmptyState } from '../../components/EmptyState'
+import { EmptyState, START_SESSION_ACTION } from '../../components/EmptyState'
 import { ErrorState } from '../../components/ErrorState'
 import { MedalIcon } from '../../components/Icons'
 import { LoadingState } from '../../components/LoadingState'
@@ -31,8 +31,8 @@ export function ProfileBadgesHighlight({ limit = 3 }: { limit?: number }) {
       </div>
 
       {achieved.length === 0 ? (
-        <EmptyState>
-          Você ainda não tem medalhas. Conclua sessões de estudo para conquistar a primeira!
+        <EmptyState action={START_SESSION_ACTION}>
+          Você ainda não conquistou medalhas. A primeira vem ao concluir uma sessão.
         </EmptyState>
       ) : (
         <ul className="flex flex-wrap gap-2">

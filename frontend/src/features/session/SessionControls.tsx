@@ -125,7 +125,7 @@ export function FinishControls({
         className="min-h-[44px] text-sm font-medium text-ink-muted underline-offset-2 hover:underline
           focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pen-600"
       >
-        Encerrar sessão
+        Encerrar e ver resumo
       </button>
     )
   }

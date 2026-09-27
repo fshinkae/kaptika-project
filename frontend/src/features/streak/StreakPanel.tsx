@@ -1,4 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
+import { Link } from 'react-router-dom'
+import { buttonClassName } from '../../components/Button'
 import { ErrorState } from '../../components/ErrorState'
 import { CheckIcon, FlameIcon } from '../../components/Icons'
 import { Skeleton } from '../../components/Skeleton'
@@ -9,8 +11,18 @@ import { getStreak, type StreakState } from './streakApi'
  * Painel de ofensiva: reflete GET /me/streak de forma motivadora e empática.
  * Trata carregando/erro(repetir) e um estado inicial simpático quando a
  * ofensiva ainda é zero. Nunca decide manter/quebrar — só espelha a API.
+ *
+ * `showAction`: oferece o botão de estudar. Na tela inicial o botão principal
+ * já existe acima do painel; na tela da ofensiva, é o painel que o oferece.
  */
-export function StreakPanel() {
+export function StreakPanel({
+  showAction = false,
+  showHeading = true,
+}: {
+  showAction?: boolean
+  /** Na tela da ofensiva o título já é o h1 da página. */
+  showHeading?: boolean
+}) {
   const query = useQuery({ queryKey: ['streak'], queryFn: getStreak })
 
   if (query.isPending) return <Skeleton label="Carregando sua ofensiva…" className="h-40" />
@@ -24,28 +36,51 @@ export function StreakPanel() {
     )
   }
 
-  return <StreakView streak={query.data} />
+  return <StreakView streak={query.data} showAction={showAction} showHeading={showHeading} />
 }
 
-function StreakView({ streak }: { streak: StreakState }) {
+function StreakView({
+  streak,
+  showAction,
+  showHeading,
+}: {
+  streak: StreakState
+  showAction: boolean
+  showHeading: boolean
+}) {
   const { current, record, freezes, metToday, brokenSinceLastAccess, brokenAt } = streak
   // A quebra tem prioridade sobre o convite inicial: mesmo com current 0,
   // se houve quebra desde o último acesso, comunicamos e incentivamos.
   const showInitialInvite = current === 0 && !brokenSinceLastAccess
   // Quem nunca manteve ofensiva não precisa de recorde 0 nem de proteções ainda.
   const showStats = !(showInitialInvite && record === 0)
+  // Ofensiva em curso sem a sessão de hoje: é o motivo para estudar agora (STK-1).
+  const pendingToday = current > 0 && !metToday
 
   return (
-    <section aria-labelledby="streak-heading" className="flex flex-col gap-5">
-      <h2 id="streak-heading" className="font-display text-lg font-bold text-ink">
-        Ofensiva diária
-      </h2>
+    <section
+      aria-labelledby={showHeading ? 'streak-heading' : undefined}
+      aria-label={showHeading ? undefined : 'Sua ofensiva'}
+      className="flex flex-col gap-5"
+    >
+      {showHeading && (
+        <h2 id="streak-heading" className="font-display text-lg font-bold text-ink">
+          Ofensiva diária
+        </h2>
+      )}
 
       {brokenSinceLastAccess && <BreakBanner brokenAt={brokenAt} />}
 
       {showInitialInvite ? <InitialInvite /> : <StreakHero current={current} metToday={metToday} />}
 
       {metToday && current > 0 && <MetTodayBadge />}
+      {pendingToday && <PendingTodayNotice current={current} />}
+
+      {showAction && !metToday && (
+        <Link to="/estudar" className={buttonClassName('primary')}>
+          {pendingToday ? 'Fazer a sessão de hoje' : 'Começar uma sessão'}
+        </Link>
+      )}
 
       {showStats && (
         <div className="flex flex-col gap-2">
@@ -89,7 +124,23 @@ function MetTodayBadge() {
       className="flex items-center justify-center gap-2 rounded-control bg-success-soft px-4 py-2.5 text-sm font-semibold text-success"
     >
       <CheckIcon className="h-4 w-4" />
-      Meta cumprida hoje
+      Feito hoje. Volte amanhã para manter.
+    </p>
+  )
+}
+
+/** A ofensiva continua só se houver sessão hoje: dito com o número em jogo. */
+function PendingTodayNotice({ current }: { current: number }) {
+  return (
+    <p
+      role="status"
+      className="flex items-center gap-2.5 rounded-control bg-highlight-soft px-4 py-3 text-sm text-ink ring-1 ring-highlight"
+    >
+      <FlameIcon className="h-5 w-5 shrink-0" />
+      <span>
+        Falta a sessão de hoje para manter seus{' '}
+        <strong className="font-semibold">{formatDays(current)}</strong>.
+      </span>
     </p>
   )
 }

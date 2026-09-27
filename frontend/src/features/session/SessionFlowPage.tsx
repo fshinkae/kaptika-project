@@ -8,6 +8,7 @@ import { EmptyState } from '../../components/EmptyState'
 import { ErrorState } from '../../components/ErrorState'
 import { CloseIcon } from '../../components/Icons'
 import { LoadingState } from '../../components/LoadingState'
+import { PageHeader } from '../../components/PageHeader'
 import { AreaSelect } from './AreaSelect'
 import { QuestionCard } from './QuestionCard'
 import {
@@ -183,13 +184,15 @@ function AreaConflict({
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-col gap-6 px-5 py-8">
-      <header className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold text-ink">Você tem uma sessão em andamento</h1>
-        <p className="text-ink-muted">
-          Ela é de <strong>{activeLabel}</strong> ({active.answeredCount} de {active.totalQuestions}{' '}
-          respondidas). Só é possível ter uma sessão por vez.
-        </p>
-      </header>
+      <PageHeader
+        title="Você tem uma sessão em andamento"
+        subtitle={
+          <>
+            Ela é de <strong>{activeLabel}</strong> ({active.answeredCount} de{' '}
+            {active.totalQuestions} respondidas). Só é possível ter uma sessão por vez.
+          </>
+        }
+      />
 
       <div className="flex flex-col gap-3">
         <Button onClick={onResume} disabled={isSwitching}>
@@ -272,8 +275,8 @@ function ActiveSession({
         <button
           type="button"
           onClick={() => navigate('/')}
-          aria-label="Sair da sessão"
-          title="Sair (o progresso fica salvo)"
+          aria-label="Sair e continuar depois"
+          title="Sair e continuar depois (o progresso fica salvo)"
           className="-ml-3 flex h-11 w-11 shrink-0 items-center justify-center rounded-control text-ink-muted
             transition hover:bg-paper
             focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pen-600"
@@ -283,6 +286,7 @@ function ActiveSession({
         <SessionProgress
           current={current?.position ?? session.answeredCount}
           total={session.totalQuestions}
+          results={answerResults(session, feedback)}
         />
       </header>
 
@@ -329,13 +333,17 @@ function ActiveSession({
         </EmptyState>
       )}
 
-      <FinishControls
-        confirming={confirmingFinish}
-        isFinishing={finishMutation.isPending}
-        onAsk={() => setConfirmingFinish(true)}
-        onCancel={() => setConfirmingFinish(false)}
-        onConfirm={() => finishMutation.mutate()}
-      />
+      {/* Depois da última resposta a sessão já acabou: o próximo passo é o
+          resumo, e "encerrar" viraria uma segunda saída para o mesmo lugar (SES-8). */}
+      {current && (!feedback || feedback.sessionStatus === 'ACTIVE') && (
+        <FinishControls
+          confirming={confirmingFinish}
+          isFinishing={finishMutation.isPending}
+          onAsk={() => setConfirmingFinish(true)}
+          onCancel={() => setConfirmingFinish(false)}
+          onConfirm={() => finishMutation.mutate()}
+        />
+      )}
 
       {finishMutation.isError && (
         <p role="alert" className="text-sm text-danger">
@@ -344,6 +352,18 @@ function ActiveSession({
       )}
     </main>
   )
+}
+
+/**
+ * Acerto/erro por posição, na ordem das bolinhas (SES-10): as respostas já
+ * registradas vêm da sessão; a que acabou de ser corrigida, do feedback.
+ */
+function answerResults(session: SessionResponse, feedback: AnswerResult | null): (boolean | null)[] {
+  const byQuestion = new Map(session.answers.map((a) => [a.questionId, a.correct]))
+  if (feedback) byQuestion.set(feedback.questionId, feedback.correct)
+  return [...session.questions]
+    .sort((a, b) => a.position - b.position)
+    .map((q) => byQuestion.get(q.questionId) ?? null)
 }
 
 function answerErrorMessage(error: unknown): string {
