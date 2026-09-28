@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ApiError } from '../../lib/apiClient'
 import { useFocusMode } from '../../components/AppShell'
 import { Button } from '../../components/Button'
@@ -32,8 +32,15 @@ import {
   type SessionSummary,
 } from './sessionApi'
 
-/** Caches derivados de sessões concluídas: XP, ofensiva, medalhas e placar mudam no backend. */
-const PROGRESS_QUERY_KEYS = [['xp'], ['streak'], ['badges'], ['profile'], ['leaderboard']]
+/** Caches derivados de sessões concluídas: XP, ofensiva, medalhas, placar e desempenho mudam no backend. */
+const PROGRESS_QUERY_KEYS = [
+  ['xp'],
+  ['streak'],
+  ['badges'],
+  ['profile'],
+  ['leaderboard'],
+  ['performance'],
+]
 
 /**
  * Página de topo do fluxo de sessões (feature 002). Máquina de estados
@@ -93,6 +100,28 @@ export function SessionFlowPage() {
     },
   })
 
+  // Atalho "Estudar <área>" do painel de desempenho (007): /estudar?area=slug
+  // inicia a sessão sem passar pela escolha. O POST devolve a ativa se houver
+  // uma, e a de outra área cai no AreaConflict. O parâmetro sai da URL para o
+  // voltar não disparar outra criação. O disparo é adiado e cancelável: no
+  // StrictMode a montagem simulada descartaria o observador da mutação e a
+  // tela ficaria presa em "Separando questões…".
+  const [searchParams, setSearchParams] = useSearchParams()
+  const requestedArea = searchParams.get('area')
+  const startSession = createMutation.mutate
+  useEffect(() => {
+    if (requestedArea == null) return
+    const timer = setTimeout(() => {
+      setSearchParams({}, { replace: true })
+      const area = AREAS.find((a) => a.slug === requestedArea)?.slug
+      if (area) {
+        setStartingArea(area)
+        startSession(area)
+      }
+    }, 0)
+    return () => clearTimeout(timer)
+  }, [requestedArea, setSearchParams, startSession])
+
   function reset() {
     setSession(null)
     setSummary(null)
@@ -126,7 +155,9 @@ export function SessionFlowPage() {
     )
   }
 
-  const current = session ?? activeQuery.data
+  // Criação em curso vem antes da ativa: no início pela URL, a ativa de outra
+  // área não deve aparecer por um instante antes do conflito.
+  const current = createMutation.isPending ? null : (session ?? activeQuery.data)
   if (current) {
     return (
       <ActiveSession
@@ -143,7 +174,7 @@ export function SessionFlowPage() {
     )
   }
 
-  if (activeQuery.isPending) {
+  if (activeQuery.isPending && !createMutation.isPending) {
     return <LoadingState label="Carregando sua sessão…" />
   }
 

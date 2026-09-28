@@ -1,3 +1,4 @@
+import { StrictMode } from 'react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -444,5 +445,60 @@ describe('SessionFlowPage', () => {
 
     expect(await screen.findByText('Separando questões de Matemática…')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Linguagens' })).not.toBeInTheDocument()
+  })
+
+  describe('área pedida pela URL (atalho do painel de desempenho, 007 FR-009)', () => {
+    it('?area=matematica cria a sessão na área, sem passar pela escolha (também em StrictMode)', async () => {
+      authenticate()
+      const requested: unknown[] = []
+      server.use(
+        http.post(`${API}/sessions`, async ({ request }) => {
+          requested.push(await request.json())
+          return HttpResponse.json(baseSession(), { status: 201 })
+        }),
+      )
+      // StrictMode simula desmontar/montar: o início pela URL não pode travar nem duplicar.
+      renderWithProviders(
+        <StrictMode>
+          <SessionFlowPage />
+        </StrictMode>,
+        { route: '/estudar?area=matematica' },
+      )
+
+      expect(await screen.findByRole('heading', { name: 'Enunciado 1' })).toBeInTheDocument()
+      expect(requested).toEqual([{ area: 'matematica' }])
+    })
+
+    it('área inválida é ignorada: mostra a escolha de área sem criar sessão', async () => {
+      authenticate()
+      let created = 0
+      server.use(
+        http.post(`${API}/sessions`, () => {
+          created++
+          return HttpResponse.json(baseSession(), { status: 201 })
+        }),
+      )
+      renderWithProviders(<SessionFlowPage />, { route: '/estudar?area=astrologia' })
+
+      expect(await screen.findByRole('button', { name: 'Matemática' })).toBeInTheDocument()
+      expect(created).toBe(0)
+    })
+
+    it('com sessão ativa de outra área, pergunta em vez de retomar a outra', async () => {
+      authenticate()
+      const active = baseSession({ area: 'linguagens', answeredCount: 1 })
+      server.use(
+        http.get(`${API}/sessions/active`, () => HttpResponse.json(active)),
+        http.post(`${API}/sessions`, () => HttpResponse.json(active)),
+        http.get(`${API}/sessions/s1`, () => HttpResponse.json(active)),
+      )
+      renderWithProviders(<SessionFlowPage />, { route: '/estudar?area=matematica' })
+
+      expect(
+        await screen.findByRole('heading', { name: /sessão em andamento/i }),
+      ).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /Continuar em Linguagens/ })).toBeInTheDocument()
+      expect(screen.queryByRole('heading', { name: 'Enunciado 1' })).not.toBeInTheDocument()
+    })
   })
 })

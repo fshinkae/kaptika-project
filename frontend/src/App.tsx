@@ -12,6 +12,7 @@ import { SessionFlowPage } from './features/session/SessionFlowPage'
 import { StreakPage } from './features/streak'
 import { BadgesGalleryPage } from './features/badges'
 import { LeaderboardPage } from './features/leaderboard'
+import { PerformancePage } from './features/performance'
 
 /** Rotas públicas de auth: usuário já logado é levado à tela inicial. */
 function PublicOnlyRoute({ children }: { children: React.ReactNode }) {
@@ -34,6 +35,7 @@ export function App() {
           <Route path="/ofensiva" element={<StreakPage />} />
           <Route path="/medalhas" element={<BadgesGalleryPage />} />
           <Route path="/placar" element={<LeaderboardPage />} />
+          <Route path="/desempenho" element={<PerformancePage />} />
           <Route path="/perfil" element={<ProfilePage />} />
         </Route>
       </Route>

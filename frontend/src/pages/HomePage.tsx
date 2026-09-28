@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { buttonClassName } from '../components/Button'
-import { MedalIcon, RankIcon } from '../components/Icons'
+import { ChartIcon, MedalIcon, RankIcon } from '../components/Icons'
 import { LogoMark } from '../components/Logo'
 import { PageHeader } from '../components/PageHeader'
 import { XpPanel } from '../features/xp'
@@ -45,6 +45,10 @@ export function HomePage() {
       <StreakPanel />
 
       <div className="grid grid-cols-2 gap-3">
+        <Link to="/desempenho" className={`col-span-2 ${SHORTCUT_CLASS}`}>
+          <ChartIcon className="h-5 w-5 text-pen-600" />
+          Seu desempenho
+        </Link>
         <Link to="/medalhas" className={SHORTCUT_CLASS}>
           <MedalIcon className="h-5 w-5 text-pen-600" />
           Medalhas

@@ -44,6 +44,12 @@ export const RankIcon = (p: IconProps) => (
   </Icon>
 )
 
+export const ChartIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M3.5 3.5v17h17M7.5 16.5l4-5 3 3 5.5-7" />
+  </Icon>
+)
+
 export const UserIcon = (p: IconProps) => (
   <Icon {...p}>
     <circle cx="12" cy="8" r="4" />
