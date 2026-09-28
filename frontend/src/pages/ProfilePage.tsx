@@ -2,12 +2,14 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Link } from 'react-router-dom'
 import { z } from 'zod'
 import { useAuth } from '../auth/AuthContext'
 import { ApiError } from '../lib/apiClient'
 import { getProfile, updateProfile, type Profile } from '../lib/profileApi'
 import { ProfileBadgesHighlight } from '../features/badges'
 import { Avatar } from '../components/Avatar'
+import { ChartIcon } from '../components/Icons'
 import { Button } from '../components/Button'
 import { ErrorState } from '../components/ErrorState'
 import { FormField } from '../components/FormField'
@@ -70,6 +72,14 @@ function ProfileView({
         <Stat label="Ofensiva" value={formatDays(progress.streakCurrent)} />
         <Stat label="Medalhas" value={progress.badgesCount} />
       </dl>
+
+      <Link
+        to="/desempenho"
+        className="inline-flex min-h-[44px] items-center gap-2 rounded-control px-3 text-sm font-semibold text-pen-700 hover:bg-pen-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pen-600"
+      >
+        <ChartIcon className="h-5 w-5" />
+        Ver desempenho
+      </Link>
 
       <ProfileBadgesHighlight />
 
