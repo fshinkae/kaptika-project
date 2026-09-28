@@ -15,14 +15,16 @@ specs/
 │   ├── 003-sistema-de-xp.md
 │   ├── 004-ofensiva-diaria-streak.md
 │   ├── 005-medalhas-e-conquistas.md
-│   └── 006-placar-de-lideres.md
+│   ├── 006-placar-de-lideres.md
+│   └── 007-painel-de-desempenho.md
 └── frontend/    # React + TypeScript + Tailwind + Vite (Mobile-First)
     ├── 001-autenticacao-e-perfil.md
     ├── 002-sessoes-de-estudo.md
     ├── 003-sistema-de-xp.md
     ├── 004-ofensiva-diaria-streak.md
     ├── 005-medalhas-e-conquistas.md
-    └── 006-placar-de-lideres.md
+    ├── 006-placar-de-lideres.md
+    └── 007-painel-de-desempenho.md
 ```
 
 Cada par de mesmo número descreve a **mesma feature** em camadas diferentes e se referencia mutuamente pelo campo **Contraparte** no topo do arquivo.
@@ -51,6 +53,7 @@ Marcações [NEEDS CLARIFICATION: ...] sinalizam decisões pendentes antes da fa
 | 004 | Ofensiva Diária (Streak) | [backend](./backend/004-ofensiva-diaria-streak.md) | [frontend](./frontend/004-ofensiva-diaria-streak.md) |
 | 005 | Medalhas e Conquistas | [backend](./backend/005-medalhas-e-conquistas.md) | [frontend](./frontend/005-medalhas-e-conquistas.md) |
 | 006 | Placar de Líderes | [backend](./backend/006-placar-de-lideres.md) | [frontend](./frontend/006-placar-de-lideres.md) |
+| 007 | Painel de Desempenho | [backend](./backend/007-painel-de-desempenho.md) | [frontend](./frontend/007-painel-de-desempenho.md) |
 
 ## Divisão de responsabilidades por camada
 
