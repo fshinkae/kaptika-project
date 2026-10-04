@@ -7,6 +7,7 @@ import com.kaptika.api.session.SessionDtos.AnswerResult;
 import com.kaptika.api.session.SessionDtos.AnswerView;
 import com.kaptika.api.session.SessionDtos.QuestionView;
 import com.kaptika.api.session.SessionDtos.SessionResponse;
+import com.kaptika.api.session.SessionDtos.SessionReview;
 import com.kaptika.api.session.SessionDtos.SessionSummary;
 import com.kaptika.api.session.SessionExceptions.AnswerConflictException;
 import com.kaptika.api.session.SessionExceptions.SessionClosedException;
@@ -19,6 +20,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -202,6 +204,18 @@ public class SessionService {
             completeAndPublish(session, ordered.size());
         }
         return toSummary(session, ordered.size(), countAnswered(session, ordered));
+    }
+
+    /** Resultados da sessão para a análise de IA (008); 404 se não for do estudante. */
+    @Transactional(readOnly = true)
+    public SessionReview reviewOf(UUID profileId, UUID sessionId) {
+        StudySession session = owned(profileId, sessionId);
+        Map<String, Boolean> correctById = answers.findBySessionId(sessionId).stream()
+                .collect(Collectors.toMap(Answer::getSourceId, Answer::isCorrect));
+        List<Boolean> results = sessionQuestions.findBySessionOrdered(sessionId).stream()
+                .map(sq -> correctById.get(sq.getSourceId()))
+                .toList();
+        return new SessionReview(session.getArea(), session.isActive(), results);
     }
 
     private void completeAndPublish(StudySession session, int totalQuestions) {

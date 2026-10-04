@@ -49,6 +49,16 @@ kaptika:
     # Cache em memória (efêmero) das questões consultadas — evita rebater a API
     # na correção/retomada. NÃO é persistência; expira sozinho.
     cache-ttl: 10m
+  ai:
+    # Análise de IA da sessão (008). Sem chave o endpoint responde 503.
+    api-key: ${AI_API_KEY:}
+    base-url: ${AI_BASE_URL:https://api.anthropic.com}
+    model: claude-haiku-4-5
+    # Saída curta (até 3 frases): poucos tokens e resposta rápida
+    max-tokens: 200
+    timeout: 10s
+    # Análises por estudante por dia (limite em memória, por instância)
+    daily-limit: 20
 
 management:
   endpoints:
