@@ -90,3 +90,120 @@ body {
     letter-spacing: -0.015em;
   }
 }
+
+/*
+ * Página pública (LandingPage). Pontilhado de cartão-resposta no fundo do
+ * herói, entrada suave das seções e a prévia animada da questão: um laço de
+ * 7s em que a alternativa C é marcada, vira acerto, sobe +10 XP e a ofensiva
+ * passa de 6 para 7. Com movimento reduzido, tudo fica no estado final.
+ */
+.hero-dots {
+  isolation: isolate;
+}
+.hero-dots::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: radial-gradient(circle, var(--color-line) 1.3px, transparent 1.5px);
+  background-size: 22px 22px;
+  mask-image: linear-gradient(to bottom, #000 55%, transparent);
+}
+
+.reveal {
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.reveal[data-visible='false'] {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+.demo-choice {
+  animation: demo-choice 7s infinite;
+}
+.demo-bubble {
+  animation: demo-bubble 7s infinite;
+}
+.demo-check {
+  animation: demo-pop 7s infinite;
+}
+.demo-xp {
+  animation: demo-xp 7s infinite;
+}
+.demo-dot {
+  animation: demo-dot 7s infinite;
+}
+.demo-streak-old {
+  animation: demo-swap-out 7s infinite;
+}
+.demo-streak-new {
+  animation: demo-swap-in 7s infinite;
+}
+.float-slow {
+  animation: float-slow 5s ease-in-out infinite;
+}
+
+@keyframes demo-choice {
+  0%, 26%, 96%, 100% { border-color: var(--color-line); background-color: transparent; }
+  32%, 44% { border-color: var(--color-pen-600); background-color: var(--color-pen-50); }
+  50%, 90% { border-color: var(--color-success); background-color: var(--color-success-soft); }
+}
+@keyframes demo-bubble {
+  0%, 26%, 96%, 100% { border-color: var(--color-line-strong); background-color: transparent; color: var(--color-ink-muted); }
+  32%, 44% { border-color: var(--color-pen-600); background-color: var(--color-pen-600); color: #fff; }
+  50%, 90% { border-color: var(--color-success); background-color: var(--color-success); color: #fff; }
+}
+@keyframes demo-pop {
+  0%, 46%, 94%, 100% { opacity: 0; transform: scale(0.4); }
+  52% { opacity: 1; transform: scale(1.2); }
+  56%, 90% { opacity: 1; transform: scale(1); }
+}
+@keyframes demo-xp {
+  0%, 48%, 92%, 100% { opacity: 0; transform: translateY(14px) scale(0.8); }
+  54% { opacity: 1; transform: translateY(0) scale(1.08); }
+  58%, 84% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes demo-dot {
+  0%, 48%, 96%, 100% { background-color: var(--color-line); }
+  52%, 92% { background-color: var(--color-success); }
+}
+@keyframes demo-swap-out {
+  0%, 56%, 96%, 100% { opacity: 1; transform: translateY(0); }
+  62%, 90% { opacity: 0; transform: translateY(-10px); }
+}
+@keyframes demo-swap-in {
+  0%, 56%, 96%, 100% { opacity: 0; transform: translateY(10px); }
+  62%, 90% { opacity: 1; transform: translateY(0); }
+}
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal,
+  .reveal[data-visible='false'] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .demo-choice,
+  .demo-bubble,
+  .demo-check,
+  .demo-xp,
+  .demo-dot,
+  .demo-streak-old,
+  .demo-streak-new,
+  .float-slow {
+    animation: none;
+  }
+  .demo-choice { border-color: var(--color-success); background-color: var(--color-success-soft); }
+  .demo-bubble { border-color: var(--color-success); background-color: var(--color-success); color: #fff; }
+  .demo-dot { background-color: var(--color-success); }
+  .demo-streak-old { opacity: 0; }
+}
