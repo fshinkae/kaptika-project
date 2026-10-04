@@ -7,6 +7,7 @@ import { Skeleton } from '../../components/Skeleton'
 import { formatDays, formatInt } from '../../lib/format'
 import { LevelMeter, useXpSummary } from '../xp'
 import { getStreak } from '../streak'
+import { AiFeedbackCard } from './AiFeedbackCard'
 import { AREAS, type SessionSummary } from './sessionApi'
 
 /**
@@ -36,6 +37,8 @@ export function SessionSummaryView({
       </dl>
 
       <SessionProgressReport />
+
+      <AiFeedbackCard sessionId={summary.sessionId} />
 
       <div className="flex flex-col gap-3">
         <Link to="/" className={buttonClassName('primary')}>

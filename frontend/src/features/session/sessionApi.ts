@@ -119,3 +119,14 @@ export function finishSession(id: string): Promise<SessionSummary> {
     method: 'POST',
   })
 }
+
+/** Análise curta, escrita por IA, de uma sessão encerrada (008). Não é persistida. */
+export interface SessionFeedback {
+  text: string
+}
+
+export function getSessionFeedback(id: string): Promise<SessionFeedback> {
+  return apiFetch<SessionFeedback>(`/sessions/${id}/feedback`, {
+    method: 'POST',
+  })
+}
