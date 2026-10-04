@@ -80,4 +80,11 @@ public final class SessionDtos {
             Instant startedAt,
             Instant finishedAt) {
     }
+
+    /**
+     * Retrato da sessão para a análise de IA (008): resultado por questão na
+     * ordem da sessão ({@code null} = não respondida). Sem conteúdo de questão.
+     */
+    public record SessionReview(Area area, boolean active, List<Boolean> results) {
+    }
 }

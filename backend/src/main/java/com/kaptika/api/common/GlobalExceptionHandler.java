@@ -60,6 +60,27 @@ public class GlobalExceptionHandler {
                         "Fonte de questões indisponível no momento. Tente novamente."));
     }
 
+    /** Análise pedida para sessão ainda em andamento (008) → 409. */
+    @ExceptionHandler(com.kaptika.api.feedback.FeedbackExceptions.SessionNotFinishedException.class)
+    public ResponseEntity<ApiError> handleSessionNotFinished(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiError.of("conflict", ex.getMessage()));
+    }
+
+    /** Limite diário de análises de IA (008) → 429. */
+    @ExceptionHandler(com.kaptika.api.feedback.FeedbackExceptions.FeedbackRateLimitedException.class)
+    public ResponseEntity<ApiError> handleFeedbackRateLimited(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .body(ApiError.of("rate_limited", ex.getMessage()));
+    }
+
+    /** Provedor de IA indisponível, sem chave ou em timeout (008) → 503. */
+    @ExceptionHandler(com.kaptika.api.feedback.FeedbackExceptions.AiUnavailableException.class)
+    public ResponseEntity<ApiError> handleAiUnavailable(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(ApiError.of("ai_unavailable", ex.getMessage()));
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiError> handleUnreadable(HttpMessageNotReadableException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)

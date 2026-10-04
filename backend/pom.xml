@@ -112,6 +112,12 @@
 			<groupId>com.github.ben-manes.caffeine</groupId>
 			<artifactId>caffeine</artifactId>
 		</dependency>
+		<!-- Análise de IA da sessão (008): SDK oficial da Anthropic -->
+		<dependency>
+			<groupId>com.anthropic</groupId>
+			<artifactId>anthropic-java</artifactId>
+			<version>2.34.0</version>
+		</dependency>
 		<!-- Postgres real nos testes de integração, sem Docker -->
 		<dependency>
 			<groupId>io.zonky.test</groupId>
